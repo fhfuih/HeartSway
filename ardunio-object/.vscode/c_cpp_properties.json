@@ -1,0 +1,26 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "~/Documents/Arduino/libraries/**/src",
+                "~/Library/Arduino15/packages/arduino/hardware/avr/**/cores/arduino/",
+                "~/Library/Arduino15/packages/arduino/tools/avr-gcc/**/avr/include/",
+                "~/Library/Arduino15/packages/arduino/hardware/avr/**/variants/standard/"
+            ],
+            "defines": [
+                "USBCON"
+            ],
+            "macFrameworkPath": [
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            // "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "~/Library/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "linux-gcc-x86",
+        }
+    ],
+    "version": 4
+}

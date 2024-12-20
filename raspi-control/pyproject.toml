@@ -1,0 +1,12 @@
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+cobs = "^1.2.1"
+pyserial = "^3.5"
+questdb = "^2.0.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
