@@ -17,10 +17,7 @@ void setup() {
 
     // Send a starting timestamp so that raspi can align relative ts with
     // absolute ts Convert `now` (4 bytes) to a byte array
-    unsigned long now = millis();
-    byte now_bytes[4];
-    memcpy(now_bytes, &now, 4);
-    myPacketSerial.send(now_bytes, 4);
+    sendTimestamp();
 
     // Set up components
     Pulse::setup(A0, LED_BUILTIN, 5, 550);

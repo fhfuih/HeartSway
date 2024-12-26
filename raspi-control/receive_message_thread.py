@@ -2,7 +2,7 @@ import logging
 import traceback
 from threading import Thread
 import time
-from typing import Optional, cast
+from typing import Optional
 
 import serial
 from cobs import cobs
