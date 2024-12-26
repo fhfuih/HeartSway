@@ -34,6 +34,7 @@ if __name__ == "__main__":
 
     serial = Serial("/dev/ttyUSB0", 9600)
     qdb_sender = Sender.from_conf("http::addr=127.0.0.1:9000;")
+    qdb_sender.establish()
 
     exit_event = threading.Event()
     threads: list[threading.Thread] = [
