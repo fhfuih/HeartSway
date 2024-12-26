@@ -6,6 +6,7 @@ python = "^3.10"
 cobs = "^1.2.1"
 pyserial = "^3.5"
 questdb = "^2.0.3"
+gpiozero = "^2.0.1"
 
 [build-system]
 requires = ["poetry-core"]
