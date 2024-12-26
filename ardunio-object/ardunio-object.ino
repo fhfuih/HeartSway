@@ -62,8 +62,10 @@ void onPacketReceived(const byte* buffer, size_t size) {
                 log("?MsgSize" + String(size) + "Bwant2B");
             } else if (buffer[1] == 0) {
                 Pulse::stop();
+                log("Control off");
             } else if (buffer[1] == 1) {
                 Pulse::resume();
+                log("Control on");
             } else {
                 log("?Control" + String(buffer[1]));
             }
