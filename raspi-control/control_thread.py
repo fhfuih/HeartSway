@@ -3,7 +3,8 @@ import time
 
 from cobs import cobs
 import serial
-from gpiozero import DistanceSensor  # type: ignore
+from gpiozero import DistanceSensor
+from gpiozero.pins.pigpio import PiGPIOFactory
 
 
 class ControlTread(Thread):
@@ -15,7 +16,9 @@ class ControlTread(Thread):
         self.__last_presence_state = False
         self.__mock_presence_timer = time.time()
 
-        self.__distance_sensor = DistanceSensor(echo=27, trigger=4)
+        self.__distance_sensor = DistanceSensor(
+            echo=27, trigger=4, pin_factory=PiGPIOFactory()
+        )
 
         self.__last_vibration_message = None
 
