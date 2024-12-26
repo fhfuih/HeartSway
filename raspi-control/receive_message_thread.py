@@ -1,6 +1,6 @@
 import logging
 import traceback
-from threading import Thread
+from threading import Thread, Event
 import time
 from typing import Optional
 
@@ -10,17 +10,26 @@ from questdb.ingress import Sender, TimestampNanos
 
 
 class ReceiveMessageThread(Thread):
-    def __init__(self, serial: serial.Serial, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        serial: serial.Serial,
+        qdb_sender: Sender,
+        exit_event: Event,
+        *args,
+        **kwargs,
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.serial = serial
+        self.qdb_sender = qdb_sender
+        self.exit_event = exit_event
         self.serial_buffer = bytearray()
 
         self.arduino_start_ns: Optional[int] = None
 
     def run(self) -> None:
-        self.qdb_sender = Sender.from_conf("http::addr=127.0.0.1:9000;")
-        while True:
-            if self.serial.in_waiting:
+        while not self.exit_event.is_set():
+            # Read all available bytes
+            while self.serial.in_waiting:
                 byte = self.serial.read()
                 if byte == b"\x00":
                     if self.serial_buffer:
@@ -38,6 +47,9 @@ class ReceiveMessageThread(Thread):
                     self.serial_buffer.extend(byte)
 
             time.sleep(0.05)
+
+        # Clean up
+        logging.info("Exiting ReceiveMessageThread")
 
     def __on_message(self, data: bytes) -> None:
         msg_type = data[0]

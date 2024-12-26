@@ -3,6 +3,7 @@ import logging
 import threading
 
 from serial import Serial
+from questdb.ingress import Sender
 
 from control_thread import ControlTread
 from receive_message_thread import ReceiveMessageThread
@@ -32,12 +33,25 @@ if __name__ == "__main__":
         console_handler.setLevel(logging.DEBUG)
 
     serial = Serial("/dev/ttyUSB0", 9600)
+    qdb_sender = Sender.from_conf("http::addr=127.0.0.1:9000;")
 
-    threads = [
-        ControlTread(serial),
-        ReceiveMessageThread(serial),
+    exit_event = threading.Event()
+    threads: list[threading.Thread] = [
+        ControlTread(serial, exit_event),
+        ReceiveMessageThread(serial, qdb_sender, exit_event),
     ]
     for t in threads:
         t.start()
-    for t in threads:
-        t.join()
+    try:
+        for t in threads:
+            t.join()
+    except KeyboardInterrupt:
+        logging.info("KeyboardInterrupt. Exiting...")
+        exit_event.set()
+        for t in threads:
+            t.join()
+        qdb_sender.close(flush=True)
+        logging.info("QuestDB sender closed")
+        serial.flush()
+        serial.close()
+        logging.info("Serial closed")
