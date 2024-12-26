@@ -24,4 +24,4 @@ Ardunio to Raspi:
 * type 3: sensor data
     * 4B unsigned long: millis()
     * 2B int: bpm (normally 60~100)
-    * 2B int: ibi (normally 600~900)
+    * 2B int: ibi (normally 500~1100)
