@@ -12,13 +12,12 @@
 PacketSerial myPacketSerial;
 
 void setup() {
-    unsigned long now = millis();
-
     myPacketSerial.begin(9600);
     myPacketSerial.setPacketHandler(&onPacketReceived);
 
     // Send a starting timestamp so that raspi can align relative ts with
     // absolute ts Convert `now` (4 bytes) to a byte array
+    unsigned long now = millis();
     byte now_bytes[4];
     memcpy(now_bytes, &now, 4);
     myPacketSerial.send(now_bytes, 4);

@@ -1,25 +1,48 @@
 from threading import Thread
 import time
 
+from cobs import cobs
+import serial
+from gpiozero import DistanceSensor  # type: ignore
+
 
 class ControlTread(Thread):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, serial: serial.Serial, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+
+        self.serial = serial
 
         self.__last_presence_state = False
         self.__mock_presence_timer = time.time()
+
+        self.__distance_sensor = DistanceSensor(echo=27, trigger=4)
 
         self.__last_vibration_message = None
 
     def run(self) -> None:
         while True:
-            # Task 1: Read presence state
-            current_presence_state = self.__get_mock_presence_state()
-            if current_presence_state != self.__last_presence_state:
-                self.__last_presence_state = current_presence_state
-                print(f"Presence state changed to {current_presence_state}")
+            # Wait until someone is present
+            self.__distance_sensor.wait_for_in_range()
 
-            time.sleep(0.05)
+            # Turn on the sensors on Arduino
+            self.__send_on_off(True)
+
+            # Forge the data for Arduino feedback
+            pass
+
+            # Wait until someone is not present
+            self.__distance_sensor.wait_for_out_of_range()
+
+            # Turn off the sensors on Arduino
+            self.__send_on_off(False)
+
+    def __send_on_off(self, on_off: bool) -> None:
+        # Send the on/off command to the Arduino
+        self.__send_message(bytes((0, on_off)))
+
+    def __send_message(self, message: bytes) -> None:
+        data = cobs.encode(message) + b"\x00"
+        self.serial.write(data)
 
     def __get_mock_presence_state(self) -> bool:
         current_time = time.time()

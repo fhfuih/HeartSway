@@ -5,7 +5,7 @@ import threading
 from serial import Serial
 
 from control_thread import ControlTread
-from receive_sensor_thread import ReceiveSensorThread
+from receive_message_thread import ReceiveMessageThread
 
 
 logger = logging.getLogger("hammock")
@@ -16,7 +16,7 @@ console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
 logger.addHandler(console_handler)
 
-file_handler = logging.FileHandler("webrtc.log")
+file_handler = logging.FileHandler("hammock.log")
 file_handler.setLevel(logging.WARNING)
 logger.addHandler(file_handler)
 
@@ -30,11 +30,11 @@ if __name__ == "__main__":
     if args.verbose:
         console_handler.setLevel(logging.DEBUG)
 
-    # serial = Serial("/dev/ttyUSB0", 9600)
+    serial = Serial("/dev/ttyUSB0", 9600)
 
     threads = [
-        ControlTread(),
-        # ReceiveSensorThread(serial),
+        ControlTread(serial),
+        ReceiveMessageThread(serial),
     ]
     for t in threads:
         t.start()
