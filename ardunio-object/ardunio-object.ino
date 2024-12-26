@@ -39,7 +39,7 @@ void loop() {
                             2 +  // bpm
                             2;   // ibi
         byte buffer[buffer_length];
-        buffer[0] = 2;
+        buffer[0] = 3;
         memcpy(buffer + 1, &pulse_ts, 4);
         memcpy(buffer + 5, &bpm, 2);
         memcpy(buffer + 7, &ibi, 2);
@@ -83,6 +83,14 @@ void onPacketReceived(const byte* buffer, size_t size) {
             log("?MsgType" + String(buffer[0]));
             break;
     }
+}
+
+void sendTimestamp() {
+    unsigned long now = millis();
+    byte now_bytes[5];
+    now_bytes[0] = 2;
+    memcpy(now_bytes + 1, &now, 4);
+    myPacketSerial.send(now_bytes, 5);
 }
 
 void log(String msg) {
