@@ -51,7 +51,7 @@ class ReceiveMessageThread(Thread):
                 )
             millis = int.from_bytes(msg_content[:4], "little", signed=False)
             self.arduino_start_ns = now - millis * 1_000_000
-            logging.debug(
+            logging.info(
                 f"Received Arduino millis {millis} at {now}. Set Arduino start time to {time.ctime(self.arduino_start_ns // 1e9)}"
             )
         elif msg_type == 1:
