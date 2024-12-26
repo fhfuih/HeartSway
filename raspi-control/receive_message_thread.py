@@ -8,8 +8,6 @@ import serial
 from cobs import cobs
 from questdb.ingress import Sender, TimestampNanos
 
-logger = logging.getLogger("hammock")
-
 
 class ReceiveMessageThread(Thread):
     def __init__(self, serial: serial.Serial, *args, **kwargs) -> None:
@@ -30,11 +28,11 @@ class ReceiveMessageThread(Thread):
                             data = cobs.decode(self.serial_buffer)
                             self.__on_message(data)
                         except cobs.DecodeError as e:
-                            logger.error(f"Error decoding message: {e}")
-                            logger.error(traceback.format_exc())
+                            logging.error(f"Error decoding message: {e}")
+                            logging.error(traceback.format_exc())
                         except Exception as e:
-                            logger.error(f"Error processing message: {e}")
-                            logger.error(traceback.format_exc())
+                            logging.error(f"Error processing message: {e}")
+                            logging.error(traceback.format_exc())
                     self.serial_buffer.clear()
                 else:
                     self.serial_buffer.extend(byte)
@@ -48,26 +46,25 @@ class ReceiveMessageThread(Thread):
             # A millis() call from Ardunio at start
             now = time.time_ns()
             if (millis_len := len(msg_content)) != 4:
-                logger.warning(
+                logging.warning(
                     f"Invalid millis() call from Arduino. Expected 4B but got {millis_len}B"
                 )
             millis = int.from_bytes(msg_content[:4], "little", signed=False)
             self.arduino_start_ns = now - millis * 1_000_000
-            logger.debug(
+            logging.debug(
                 f"Received Arduino millis {millis} at {now}. Set Arduino start time to {time.ctime(self.arduino_start_ns // 1e9)}"
             )
-            return
         elif msg_type == 1:
             # Arduino logs something
             msg = msg_content.decode("utf-8", errors="replace")
-            logger.info(f"Arduino: {msg}")
+            logging.info(f"Arduino: {msg}")
         elif msg_type == 3:
             # A normal sensor data call
             millis = int.from_bytes(msg_content[:4], "little", signed=False)
             bpm = int.from_bytes(msg_content[4:6], "little", signed=True)
             ibi = int.from_bytes(msg_content[6:8], "little", signed=True)
             data_ns = self.__get_arduino_timestamp(millis)
-            logger.debug(f"Received message@{data_ns}: BPM={bpm}, IBI={ibi}")
+            logging.debug(f"Received message@{data_ns}: BPM={bpm}, IBI={ibi}")
             self.qdb_sender.row("sensors", columns={"bpm": bpm, "ibi": ibi}, at=data_ns)
 
     def __get_arduino_timestamp(self, millis: Optional[int]) -> TimestampNanos:

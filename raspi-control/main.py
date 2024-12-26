@@ -7,18 +7,19 @@ from serial import Serial
 from control_thread import ControlTread
 from receive_message_thread import ReceiveMessageThread
 
-
-logger = logging.getLogger("hammock")
-
-logger.propagate = False
-
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
-logger.addHandler(console_handler)
 
 file_handler = logging.FileHandler("hammock.log")
 file_handler.setLevel(logging.WARNING)
-logger.addHandler(file_handler)
+
+logging.basicConfig(
+    handlers=[
+        console_handler,
+        file_handler,
+    ],
+    level=logging.DEBUG,
+)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

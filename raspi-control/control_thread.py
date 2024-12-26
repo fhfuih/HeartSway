@@ -7,8 +7,6 @@ import serial
 from gpiozero import DistanceSensor
 from gpiozero.pins.pigpio import PiGPIOFactory
 
-logger = logging.getLogger("hammock")
-
 
 class ControlTread(Thread):
     def __init__(self, serial: serial.Serial, *args, **kwargs) -> None:
@@ -28,8 +26,8 @@ class ControlTread(Thread):
     def run(self) -> None:
         while True:
             # Wait until someone is present
-            self.__distance_sensor.wait_for_in_range()
-            logger.info("Someone is present")
+            self.__distance_sensor.wait_for_in_range()  # type: ignore
+            logging.info("Someone is present")
 
             # Turn on the sensors on Arduino
             self.__send_on_off(True)
@@ -38,8 +36,8 @@ class ControlTread(Thread):
             pass
 
             # Wait until someone is not present
-            self.__distance_sensor.wait_for_out_of_range()
-            logger.info("Someone is leaving")
+            self.__distance_sensor.wait_for_out_of_range()  # type: ignore
+            logging.info("Someone is leaving")
 
             # Turn off the sensors on Arduino
             self.__send_on_off(False)
