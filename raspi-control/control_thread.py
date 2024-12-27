@@ -73,7 +73,7 @@ class ControlTread(Thread):
         # Send the on/off command to the Arduino
         self.__send_message(bytes((0, on_off)))
         self.qdb_sender.row(
-            "control", columns={"on_off": on_off}, at=TimestampNanos.now()
+            "controls", columns={"on_off": on_off}, at=TimestampNanos.now()
         )
 
     def __send_data(self) -> None:
@@ -122,8 +122,8 @@ class ControlTread(Thread):
         self.serial.write(data)
 
     def __get_sensor_data(self, last_person_index: int) -> Optional[list]:
-        query = f"""WITH e AS (SELECT *, row_number() OVER (ORDER BY timestamp DESC) FROM control WHERE on_off = false),
-s AS (SELECT * FROM control WHERE on_off = true),
+        query = f"""WITH e AS (SELECT *, row_number() OVER (ORDER BY timestamp DESC) FROM controls WHERE on_off = false),
+s AS (SELECT * FROM controls WHERE on_off = true),
 r AS (SELECT e.timestamp AS et, s.timestamp AS st, FROM e ASOF JOIN s WHERE e.row_number = {last_person_index + 1})
 SELECT ibi FROM sensors ss JOIN r ON ss.timestamp >= r.st AND ss.timestamp <= r.et"""
         resp = requests.get("http://localhost:9000/exec", params={"query": query})
