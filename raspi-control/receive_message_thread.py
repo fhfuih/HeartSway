@@ -8,6 +8,8 @@ import serial
 from cobs import cobs
 from questdb.ingress import Sender, TimestampNanos
 
+USE_ARDUINO_TIMESTAMP = False
+
 
 class ReceiveMessageThread(Thread):
     def __init__(
@@ -80,6 +82,6 @@ class ReceiveMessageThread(Thread):
             self.qdb_sender.row("sensors", columns={"bpm": bpm, "ibi": ibi}, at=data_ns)
 
     def __get_arduino_timestamp(self, millis: Optional[int]) -> TimestampNanos:
-        if self.arduino_start_ns is None or millis is None:
+        if not USE_ARDUINO_TIMESTAMP or self.arduino_start_ns is None or millis is None:
             return TimestampNanos.now()
         return TimestampNanos(self.arduino_start_ns + millis * 1_000_000)

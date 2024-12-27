@@ -125,7 +125,7 @@ class ControlTread(Thread):
         query = f"""WITH e AS (SELECT *, row_number() OVER (ORDER BY timestamp DESC) FROM control WHERE on_off = false),
 s AS (SELECT * FROM control WHERE on_off = true),
 r AS (SELECT e.timestamp AS et, s.timestamp AS st, FROM e ASOF JOIN s WHERE e.row_number = {last_person_index + 1})
-SELECT ibi FROM sensors JOIN r ON sensor.timestamp >= r.st AND sensor.timestamp <= r.et"""
+SELECT ibi FROM sensors ss JOIN r ON ss.timestamp >= r.st AND ss.timestamp <= r.et"""
         resp = requests.get("http://localhost:9000/exec", params={"query": query})
         if not resp.ok:
             logging.error("Error getting sensor data %s", resp.text)
