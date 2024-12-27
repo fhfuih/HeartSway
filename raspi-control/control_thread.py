@@ -58,8 +58,8 @@ class ControlTread(Thread):
 
                     # Turn off the sensors on Arduino
                     self.__send_on_off(False)
-            elif time.time() > (self.__next_send_data_time):
-                # If the presense state is not changed
+            elif presence_state and time.time() > (self.__next_send_data_time):
+                # If someone continutes to be present, and it is time to send the next batch of data
                 # But it is time to send the next batch of data
                 self.__send_data()
 
