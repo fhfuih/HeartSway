@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     exit_event = threading.Event()
     threads: list[threading.Thread] = [
-        ControlTread(serial, exit_event),
+        ControlTread(serial, qdb_sender, exit_event),
         ReceiveMessageThread(serial, qdb_sender, exit_event),
     ]
     for t in threads:

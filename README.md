@@ -9,9 +9,10 @@ Raspi to Ardunio:
     * 1B: on (1) or off (0)
 * type 1: log
     * all the rest in UTF-8 string
-* type 2: vibration
-    * 10B: the next 10 IBI
-* type 3: air pump
+* type 2: IBI
+    * 2B int: ibi (normally 500~1100) in ms
+    * some more (typically 10 numbers/20B in total, but expect exceptions)
+* type 3: inhale-exhale cycle
     * 10B: the next 5 inhale-exhale cycle
 
 Ardunio to Raspi:
