@@ -72,7 +72,9 @@ class ControlTread(Thread):
     def __send_on_off(self, on_off: bool) -> None:
         # Send the on/off command to the Arduino
         self.__send_message(bytes((0, on_off)))
-        self.qdb_sender.row("control", columns={"on_off": on_off}, at=TimestampNanos())
+        self.qdb_sender.row(
+            "control", columns={"on_off": on_off}, at=TimestampNanos.now()
+        )
 
     def __send_data(self) -> None:
         # If not yet done, get the data to send
