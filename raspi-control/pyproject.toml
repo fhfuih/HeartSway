@@ -9,7 +9,7 @@ questdb = "^2.0.3"
 gpiozero = "^2.0.1"
 pigpio = "^1.78"
 requests = "^2.32.3"
-hampel = "^1.0.2"
+numpy = "^2.2.1"
 
 [build-system]
 requires = ["poetry-core"]
