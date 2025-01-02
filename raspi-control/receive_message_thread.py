@@ -75,8 +75,8 @@ class ReceiveMessageThread(Thread):
         elif msg_type == 3:
             # A normal sensor data call
             millis = int.from_bytes(msg_content[:4], "little", signed=False)
-            bpm = int.from_bytes(msg_content[4:6], "little", signed=True)
-            ibi = int.from_bytes(msg_content[6:8], "little", signed=True)
+            bpm = int.from_bytes(msg_content[4:6], "little", signed=False)
+            ibi = int.from_bytes(msg_content[6:8], "little", signed=False)
             data_ns = self.__get_arduino_timestamp(millis)
             logging.debug(f"Received message@{data_ns}: BPM={bpm}, IBI={ibi}")
             self.qdb_sender.row("sensors", columns={"bpm": bpm, "ibi": ibi}, at=data_ns)

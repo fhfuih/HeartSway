@@ -11,6 +11,11 @@
 
 PacketSerial myPacketSerial;
 
+uint16_t ibi_list[30] = {0};
+int ibi_list_write_i = 0;
+int ibi_list_read_i = 0;
+unsigned long ibi_next_read_millis = 0;
+
 void setup() {
     myPacketSerial.begin(9600);
     myPacketSerial.setPacketHandler(&onPacketReceived);
@@ -25,9 +30,12 @@ void setup() {
 }
 
 void loop() {
+    // Read sensor data
     unsigned int pulse_ts = 0;
-    int bpm = 0, ibi = 0;
-    Pulse::loop(pulse_ts, bpm, ibi);
+    int bpm_i = 0, ibi_i = 0;
+    Pulse::loop(pulse_ts, bpm_i, ibi_i);
+    uint16_t bpm = bpm_i;
+    uint16_t ibi = ibi_i;
 
     // Send sensor data to raspi
     if (pulse_ts != 0 || bpm != 0 || ibi != 0) {
@@ -41,6 +49,20 @@ void loop() {
         memcpy(buffer + 5, &bpm, 2);
         memcpy(buffer + 7, &ibi, 2);
         myPacketSerial.send(buffer, buffer_length);
+    }
+
+    // Consume incoming data if needed
+    auto now = millis();
+    // Initially, ibi_next_read_millis is 0, so will read immediately
+    if (now > ibi_next_read_millis) {
+        auto ibi = ibi_list[ibi_list_read_i];
+        // If ibi is 0, it is time to read but there is no data
+        // Do nothing and the next loop will attempt to read again
+        if (ibi != 0) {
+            ibi_next_read_millis = now + ibi;  // ibi unit is also ms
+            ibi_list_read_i = (ibi_list_read_i + 1) % sizeof(ibi_list);
+            log("ReadIbi" + String(ibi) + "at" + String(now));
+        }
     }
 
     myPacketSerial.update();
@@ -71,10 +93,22 @@ void onPacketReceived(const byte* buffer, size_t size) {
             /* raspi's log. Should not use. Ignore. */
             break;
         case 2:
-            /* vibration */
+            /* IBI */
+            if (size < 3) {
+                log("?IBIarrSize" + String(size) + "Bwant>=3B");
+                break;
+            }
+            String logString = "IBIarr:";
+            for (int i = 1; i < size; i += 2) {
+                uint16_t ibi = buffer[i] << 8 | buffer[i + 1];
+                ibi_list[ibi_list_write_i] = ibi;
+                ibi_list_write_i = (ibi_list_write_i + 1) % sizeof(ibi_list);
+                logString += String(ibi) + ",";
+            }
+            log(logString);
             break;
         case 3:
-            /* air pump */
+            /* inhale-exhale cycle */
             break;
         default:
             log("?MsgType" + String(buffer[0]));

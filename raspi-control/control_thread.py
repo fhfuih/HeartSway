@@ -3,6 +3,7 @@ from threading import Thread, Event
 import time
 from typing import Optional
 
+import numpy as np
 from cobs import cobs
 import serial
 from gpiozero import DistanceSensor
@@ -115,7 +116,7 @@ class ControlTread(Thread):
         # Send the data to Arduino. Convert each number in data_to_send to 2-byte integer and concat together
         data = bytearray(b"\x02")
         for d in data_to_send:
-            data.extend(d.to_bytes(2, "little", signed=True))
+            data.extend(d.to_bytes(2, "little", signed=False))
         self.__send_message(data)
 
     def __send_message(self, message: bytes) -> None:
