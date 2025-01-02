@@ -109,6 +109,7 @@ class ControlTread(Thread):
                 self.__next_send_data_index = paginate - so_far_data_len
 
         # Schedule the next time to send data: 80% of all IBI (millisecond) to send summed
+        logging.debug("Data to send is %s", data_to_send)
         self.__next_send_data_time = time.time() + 0.8 * sum(data_to_send) / 1000
 
         # Send the data to Arduino. Convert each number in data_to_send to 2-byte integer and concat together
@@ -131,7 +132,7 @@ SELECT ibi FROM sensors ss JOIN r ON ss.timestamp >= r.st AND ss.timestamp <= r.
             logging.error("Error getting sensor data %s", resp.text)
             return None
         resp = resp.json()
-        return resp["dataset"]
+        return [x for x2d in resp["dataset"] for x in x2d] # flatten
 
     def __get_mock_presence_state(self) -> bool:
         current_time = time.time()
