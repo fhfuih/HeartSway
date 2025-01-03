@@ -11,6 +11,8 @@ from gpiozero.pins.pigpio import PiGPIOFactory
 from questdb.ingress import Sender, TimestampNanos
 import requests
 
+USE_MOCK_SENSOR = False
+
 
 class ControlTread(Thread):
     def __init__(
@@ -41,7 +43,11 @@ class ControlTread(Thread):
         self.__prepare_next_session()
 
         while not self.exit_event.is_set():
-            presence_state = self.__distance_sensor.in_range
+            presence_state = (
+                self.__get_mock_presence_state()
+                if USE_MOCK_SENSOR
+                else self.__distance_sensor.in_range
+            )
 
             if presence_state != self.__last_presence_state:
                 # If the presense state changes
