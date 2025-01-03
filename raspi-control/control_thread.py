@@ -38,6 +38,10 @@ class ControlTread(Thread):
         self.__next_send_data_index: int = 0
         self.__next_send_data_time: float = 0
         self.__last_vibration_message = None
+        # If the latest session has no data,
+        # look for data at the second last session and so on
+        # only None if there is no session at all with data
+        self.__last_session_index_with_data: Optional[int] = 0
 
     def run(self) -> None:
         while not self.exit_event.is_set():
@@ -78,6 +82,11 @@ class ControlTread(Thread):
         )
 
     def __send_data(self) -> None:
+        # If there is no data at all in DB, skip and disable data sending.
+        if self.__last_session_index_with_data is None:
+            self.__next_send_data_time = float('inf')
+            return
+
         # If not yet done, get the data to send
         if self.__sensor_data_to_send is None:
             self.__sensor_data_to_send = self.__get_sensor_data(0)
