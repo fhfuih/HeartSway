@@ -27,23 +27,19 @@ class ControlTread(Thread):
         self.qdb_sender = qdb_sender
         self.exit_event = exit_event
 
-        self.__last_presence_state = False
-        self.__mock_presence_timer = time.time()
-
         self.__distance_sensor = DistanceSensor(
             echo=27, trigger=4, pin_factory=PiGPIOFactory()
         )
+        self.__last_presence_state = False
 
-        self.__sensor_data_to_send: Optional[list] = None
-        self.__next_send_data_index: int = 0
-        self.__next_send_data_time: float = 0
-        self.__last_vibration_message = None
-        # If the latest session has no data,
-        # look for data at the second last session and so on
-        # only None if there is no session at all with data
-        self.__last_session_index_with_data: Optional[int] = 0
+        # For test purpose
+        self.__mock_presence_timer = time.time()
+
+        self.__reset_states()
 
     def run(self) -> None:
+        self.__prepare_next_session()
+
         while not self.exit_event.is_set():
             presence_state = self.__distance_sensor.in_range
 
@@ -54,7 +50,7 @@ class ControlTread(Thread):
                     logging.info("Someone is present")
 
                     # Turn on the sensors on Arduino
-                    self.__send_on_off(True)
+                    self.__send_on()
 
                     # Forge the data for Arduino feedback
                     pass
@@ -62,7 +58,8 @@ class ControlTread(Thread):
                     logging.info("Someone is leaving")
 
                     # Turn off the sensors on Arduino
-                    self.__send_on_off(False)
+                    self.__send_off()
+                    self.__prepare_next_session()
             elif presence_state and time.time() > (self.__next_send_data_time):
                 # If someone continutes to be present, and it is time to send the next batch of data
                 # But it is time to send the next batch of data
@@ -71,29 +68,60 @@ class ControlTread(Thread):
             time.sleep(0.05)
 
         # Clean up
-        self.__send_on_off(False)
+        self.__send_off()
         logging.info("Exiting ControlThread")
 
-    def __send_on_off(self, on_off: bool) -> None:
-        # Send the on/off command to the Arduino
-        self.__send_message(bytes((0, on_off)))
+    def __reset_states(self) -> None:
+        self.__sensor_data_to_send: Optional[list] = None
+        self.__next_send_data_index: int = 0
+        self.__next_send_data_time: float = 0
+        self.__last_vibration_message = None
+
+    def __prepare_next_session(self) -> None:
+        self.__sensor_data_to_send = self.__get_last_session_data()
+        self.__next_send_data_index: int = 0
+        self.__next_send_data_time: float = 0
+        logging.debug("Session data to serve is %s", self.__sensor_data_to_send)
+
+    def __send_on(self) -> None:
+        self.__send_message(bytes((0, True)))
         self.qdb_sender.row(
-            "controls", columns={"on_off": on_off}, at=TimestampNanos.now()
+            "controls", columns={"on_off": True}, at=TimestampNanos.now()
         )
 
-    def __send_data(self) -> None:
-        # If there is no data at all in DB, skip and disable data sending.
-        if self.__last_session_index_with_data is None:
-            self.__next_send_data_time = float('inf')
-            return
+    def __send_off(self) -> None:
+        self.__send_message(bytes((0, False)))
+        self.qdb_sender.row(
+            "controls", columns={"on_off": False}, at=TimestampNanos.now()
+        )
 
-        # If not yet done, get the data to send
+    def __get_last_session_data(self) -> Optional[list]:
+        session_index = 0
+        session_data = None
+        total_session_count = self.__get_total_session_count() or 1
+        logging.debug("Total session count is %s", total_session_count)
+
+        while session_index < total_session_count:
+            session_data = self.__get_sensor_data(session_index)
+            if session_data is None or len(session_data) == 0:
+                # Errorneous data None or empty data
+                session_index -= 1
+            else:
+                # Reaching good data. Stop searching
+                break
+
+        if session_data is None or len(session_data) == 0:
+            return None
+        return session_data
+
+    def __send_data(self) -> None:
+        # Data should have been prepared already. But if no, retry preparing data
         if self.__sensor_data_to_send is None:
-            self.__sensor_data_to_send = self.__get_sensor_data(0)
-            self.__next_send_data_index = 0
+            self.__prepare_next_session()
 
         # If still no data, do nothing. Retry getting data in 5 seconds
         if self.__sensor_data_to_send is None:
+            logging.warning("No data to send. Retry sending data in 5 seconds.")
             self.__next_send_data_time = time.time() + 5
             return
 
@@ -142,7 +170,16 @@ SELECT ibi FROM sensors ss JOIN r ON ss.timestamp >= r.st AND ss.timestamp <= r.
             logging.error("Error getting sensor data %s", resp.text)
             return None
         resp = resp.json()
-        return [x for x2d in resp["dataset"] for x in x2d] # flatten
+        return [x for x2d in resp["dataset"] for x in x2d]  # flatten
+
+    def __get_total_session_count(self) -> Optional[int]:
+        query = "SELECT COUNT(*) from controls where on_off=false"
+        resp = requests.get("http://localhost:9000/exec", params={"query": query})
+        if not resp.ok:
+            logging.error("Error getting total session count %s", resp.text)
+            return None
+        resp = resp.json()
+        return resp["dataset"][0][0]
 
     def __get_mock_presence_state(self) -> bool:
         current_time = time.time()
