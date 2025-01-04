@@ -105,12 +105,13 @@ class ControlTread(Thread):
         session_index = 0
         session_data = None
         total_session_count = self.__get_total_session_count() or 1
-        logging.debug("Total session count is %s", total_session_count)
+        logging.info("Total session count is %s", total_session_count)
 
         while session_index < total_session_count:
             session_data = self.__get_sensor_data(session_index)
             if session_data is None or len(session_data) == 0:
                 # Errorneous data None or empty data
+                logging.debug("No data for session %s", session_index)
                 session_index += 1
             else:
                 # Reaching good data. Stop searching
