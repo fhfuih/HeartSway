@@ -111,7 +111,7 @@ class ControlTread(Thread):
             session_data = self.__get_sensor_data(session_index)
             if session_data is None or len(session_data) == 0:
                 # Errorneous data None or empty data
-                session_index -= 1
+                session_index += 1
             else:
                 # Reaching good data. Stop searching
                 break
