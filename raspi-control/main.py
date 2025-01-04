@@ -22,6 +22,11 @@ logging.basicConfig(
     level=logging.DEBUG,
 )
 
+for logger_name in "requests.packages.urllib3", "requests", "urllib3":
+    requests_log = logging.getLogger(logger_name)
+    requests_log.setLevel(logging.WARNING)
+    requests_log.propagate = False
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
