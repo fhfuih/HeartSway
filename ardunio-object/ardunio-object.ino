@@ -98,14 +98,14 @@ void onPacketReceived(const byte* buffer, size_t size) {
                 log("?IBIarrSize" + String(size) + "Bwant>=3B");
                 break;
             }
-            String logString = "IBIarr:";
-            for (int i = 1; i < size; i += 2) {
-                uint16_t ibi = buffer[i] << 8 | buffer[i + 1];
-                ibi_list[ibi_list_write_i] = ibi;
-                ibi_list_write_i = (ibi_list_write_i + 1) % sizeof(ibi_list);
-                logString += String(ibi) + ",";
-            }
-            log(logString);
+            // String logString = "IBIarr:";
+            // for (int i = 1; i < size; i += 2) {
+            //     uint16_t ibi = buffer[i + 1] << 8 | buffer[i];
+            //     ibi_list[ibi_list_write_i] = ibi;
+            //     ibi_list_write_i = (ibi_list_write_i + 1) % sizeof(ibi_list);
+            //     logString += String(ibi) + ",";
+            // }
+            // log(logString);
             break;
         case 3:
             /* inhale-exhale cycle */
