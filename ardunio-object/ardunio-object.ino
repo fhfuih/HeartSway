@@ -11,6 +11,8 @@
 
 PacketSerial myPacketSerial;
 
+bool in_session = false;
+
 uint16_t ibi_list[30] = {0};
 int ibi_list_write_i = 0;
 int ibi_list_read_i = 0;
@@ -52,16 +54,18 @@ void loop() {
     }
 
     // Consume incoming data if needed
-    auto now = millis();
-    // Initially, ibi_next_read_millis is 0, so will read immediately
-    if (now > ibi_next_read_millis) {
-        auto ibi = ibi_list[ibi_list_read_i];
-        // If ibi is 0, it is time to read but there is no data
-        // Do nothing and the next loop will attempt to read again
-        if (ibi != 0) {
-            ibi_next_read_millis = now + ibi;  // ibi unit is also ms
-            ibi_list_read_i = (ibi_list_read_i + 1) % sizeof(ibi_list);
-            log("ReadIbi" + String(ibi) + "at" + String(now));
+    if (in_session) {
+        auto now = millis();
+        // Initially, ibi_next_read_millis is 0, so will read immediately
+        if (now > ibi_next_read_millis) {
+            auto ibi = ibi_list[ibi_list_read_i];
+            // If ibi is 0, it is time to read but there is no data
+            // Do nothing and the next loop will attempt to read again
+            if (ibi != 0) {
+                ibi_next_read_millis = now + ibi;  // ibi unit is also ms
+                ibi_list_read_i = (ibi_list_read_i + 1) % sizeof(ibi_list);
+                log("ReadIbi" + String(ibi) + "at" + String(now));
+            }
         }
     }
 
@@ -80,9 +84,11 @@ void onPacketReceived(const byte* buffer, size_t size) {
             if (size != 2) {
                 log("?MsgSize" + String(size) + "Bwant2B");
             } else if (buffer[1] == 0) {
+                in_session = false;
                 Pulse::stop();
                 log("Control off");
             } else if (buffer[1] == 1) {
+                in_session = true;
                 Pulse::resume();
                 log("Control on");
             } else {
@@ -99,12 +105,12 @@ void onPacketReceived(const byte* buffer, size_t size) {
                 break;
             }
             // String logString = "IBIarr:";
-            // for (int i = 1; i < size; i += 2) {
-            //     uint16_t ibi = buffer[i + 1] << 8 | buffer[i];
-            //     ibi_list[ibi_list_write_i] = ibi;
-            //     ibi_list_write_i = (ibi_list_write_i + 1) % sizeof(ibi_list);
-            //     logString += String(ibi) + ",";
-            // }
+            for (int i = 1; i < size; i += 2) {
+                uint16_t ibi = buffer[i + 1] << 8 | buffer[i];
+                ibi_list[ibi_list_write_i] = ibi;
+                ibi_list_write_i = (ibi_list_write_i + 1) % sizeof(ibi_list);
+                // logString += String(ibi) + ",";
+            }
             // log(logString);
             break;
         case 3:
