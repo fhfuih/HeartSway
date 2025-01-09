@@ -50,13 +50,13 @@ Adafruit-Blinka = "*"
 
 [[package]]
 name = "adafruit-circuitpython-neopixel"
-version = "6.3.12"
+version = "6.3.13"
 description = "CircuitPython library for NeoPixel LEDs."
 optional = false
 python-versions = "*"
 files = [
-    {file = "adafruit_circuitpython_neopixel-6.3.12-py3-none-any.whl", hash = "sha256:9ecca6e6bf32707f49d041c3c7beb352b8f37cea8cb3bad65e8c464dec0b7b6e"},
-    {file = "adafruit_circuitpython_neopixel-6.3.12.tar.gz", hash = "sha256:e3379bd0ee2d7cb529c78824f5c2c7cd660a06c525311e6e251062e0c03529db"},
+    {file = "adafruit_circuitpython_neopixel-6.3.13-py3-none-any.whl", hash = "sha256:79756739e2a53f679de76394cfcc7c5c8217fcafa8769414ccee31a2753e5f47"},
+    {file = "adafruit_circuitpython_neopixel-6.3.13.tar.gz", hash = "sha256:b6b30b1b49216454a080745779f80e272557651d3e9b33a4f9fdb6d6d790b92c"},
 ]
 
 [package.dependencies]
@@ -277,42 +277,6 @@ files = [
     {file = "cobs-1.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:3431da8248d91c241ad98ceb08df00824574421132e42359cd31080a1e13bf24"},
     {file = "cobs-1.2.1.tar.gz", hash = "sha256:2af7f8791cde1ae7c6b936f5d0c35fe29feb10de25f79c15b0af0d6729783cc0"},
 ]
-
-[[package]]
-name = "colorzero"
-version = "2.0"
-description = "Yet another Python color library"
-optional = false
-python-versions = "*"
-files = [
-    {file = "colorzero-2.0-py2.py3-none-any.whl", hash = "sha256:0e60d743a6b8071498a56465f7719c96a5e92928f858bab1be2a0d606c9aa0f8"},
-    {file = "colorzero-2.0.tar.gz", hash = "sha256:e7d5a5c26cd0dc37b164ebefc609f388de24f8593b659191e12d85f8f9d5eb58"},
-]
-
-[package.dependencies]
-setuptools = "*"
-
-[package.extras]
-doc = ["pkginfo", "sphinx", "sphinx-rtd-theme"]
-test = ["pytest", "pytest-cov"]
-
-[[package]]
-name = "gpiozero"
-version = "2.0.1"
-description = "A simple interface to GPIO devices with Raspberry Pi"
-optional = false
-python-versions = ">=3.9"
-files = [
-    {file = "gpiozero-2.0.1-py3-none-any.whl", hash = "sha256:8f621de357171d574c0b7ea0e358cb66e560818a47b0eeedf41ce1cdbd20c70b"},
-    {file = "gpiozero-2.0.1.tar.gz", hash = "sha256:d4ea1952689ec7e331f9d4ebc9adb15f1d01c2c9dcfabb72e752c9869ab7e97e"},
-]
-
-[package.dependencies]
-colorzero = "*"
-
-[package.extras]
-doc = ["sphinx (>=4.0)", "sphinx-rtd-theme (>=1.0)"]
-test = ["pytest", "pytest-cov"]
 
 [[package]]
 name = "idna"
@@ -552,26 +516,6 @@ files = [
 ]
 
 [[package]]
-name = "setuptools"
-version = "75.7.0"
-description = "Easily download, build, install, upgrade, and uninstall Python packages"
-optional = false
-python-versions = ">=3.9"
-files = [
-    {file = "setuptools-75.7.0-py3-none-any.whl", hash = "sha256:84fb203f278ebcf5cd08f97d3fb96d3fbed4b629d500b29ad60d11e00769b183"},
-    {file = "setuptools-75.7.0.tar.gz", hash = "sha256:886ff7b16cd342f1d1defc16fc98c9ce3fde69e087a4e1983d7ab634e5f41f4f"},
-]
-
-[package.extras]
-check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1)", "ruff (>=0.8.0)"]
-core = ["importlib_metadata (>=6)", "jaraco.collections", "jaraco.functools (>=4)", "jaraco.text (>=3.7)", "more_itertools", "more_itertools (>=8.8)", "packaging", "packaging (>=24.2)", "platformdirs (>=4.2.2)", "tomli (>=2.0.1)", "wheel (>=0.43.0)"]
-cover = ["pytest-cov"]
-doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "pyproject-hooks (!=1.1)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier", "towncrier (<24.7)"]
-enabler = ["pytest-enabler (>=2.2)"]
-test = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "ini2toml[lite] (>=0.14)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.7.2)", "jaraco.test (>=5.5)", "packaging (>=24.2)", "pip (>=19.1)", "pyproject-hooks (!=1.1)", "pytest (>=6,!=8.1.*)", "pytest-home (>=0.5)", "pytest-perf", "pytest-subprocess", "pytest-timeout", "pytest-xdist (>=3)", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel (>=0.44.0)"]
-type = ["importlib_metadata (>=7.0.2)", "jaraco.develop (>=7.21)", "mypy (==1.14.*)", "pytest-mypy"]
-
-[[package]]
 name = "sysv-ipc"
 version = "1.1.0"
 description = "System V IPC primitives (semaphores, shared memory and message queues) for Python"
@@ -616,4 +560,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4c010672dba8677b9a4047aeafd56f8b9e454247260f9b7c89505639689dd811"
+content-hash = "ef59aa8db967f398d3c10e8880fed861bac1415632a52210bb9a6828f6490a98"
