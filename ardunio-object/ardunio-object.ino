@@ -75,13 +75,14 @@ void loop() {
                 ibi_list_read_i = 1;
                 ibi_next_read_millis = now + ibi;
             }
-            log("ReadIbi" + String(ibi) + "at" + String(now));
+            
             // If now ibi is still 0, then the list begins with 0
             // Ask next loop to read from start again
             if (ibi == 0) {
                 ibi_list_read_i = 0;
                 ibi_next_read_millis = now;
-                log("?NoIbiData");
+            } else {
+              log("ReadIbi" + String(ibi) + "at" + String(now));
             }
         }
     }
@@ -124,14 +125,14 @@ void onPacketReceived(const byte* buffer, size_t size) {
                 log("?IBIarrSize" + String(size) + "Bwant>=3B");
                 break;
             }
-            // String logString = "IBIarr:";
+             String logString = ".IBIarrLen" + (size - 1) / 2;
             for (int i = 1; i < size; i += 2) {
                 uint16_t ibi = buffer[i + 1] << 8 | buffer[i];
                 ibi_list[ibi_list_write_i] = ibi;
                 ibi_list_write_i = (ibi_list_write_i + 1) % ibi_list_len;
-                // logString += String(ibi) + ",";
+//                 logString += String(ibi) + ",";
             }
-            // log(logString);
+             log(logString);
             break;
         case 3:
             /* inhale-exhale cycle */
