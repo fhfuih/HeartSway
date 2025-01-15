@@ -23,18 +23,18 @@ class LEDThread(Thread):
 
     def show(self, data):
         """Assume data is a list of integers describing the in/out/in/out breathing pattern in ms"""
-        self.__data = data
-        self.__data_index = 0
-        self.__item_progress = 0
+        self._data = data
+        self._data_index = 0
+        self._item_progress = 0
 
         # Ensure that the data length is even (in, out, in, out)
-        if len(self.__data) % 2 != 0:
-            self.__data.append(data[-1])
+        if len(self._data) % 2 != 0:
+            self._data.append(data[-1])
 
     def stop(self):
-        self.__data = None
-        self.__data_index = 0
-        self.__item_progress = 0
+        self._data = None
+        self._data_index = 0
+        self._item_progress = 0
 
     def run(self) -> None:
         # Set up
@@ -46,23 +46,23 @@ class LEDThread(Thread):
 
         # Loop
         while not self.exit_event.is_set():
-            if self.__data:
-                item = self.__data[self.__data_index]
-                is_reversed = self.__data_index % 2 == 1
-                anim_progress = self.__item_progress / item
+            if self._data:
+                item = self._data[self._data_index]
+                is_reversed = self._data_index % 2 == 1
+                anim_progress = self._item_progress / item
                 if is_reversed:
                     anim_progress = 1 - anim_progress
                 anim_value = utils.easeInOutQuad(anim_progress)
 
                 # Assume 1ms per loop/progress.
                 # If changing the progress step, please adjust the sleep time accordingly.
-                self.__item_progress += 1
-                if self.__item_progress > item:
-                    self.__item_progress = 0
-                    self.__data_index += 1
-                    if self.__data_index >= len(self.__data):
-                        self.__data_index = 0
-                        self.__item_progress = 0
+                self._item_progress += 1
+                if self._item_progress > item:
+                    self._item_progress = 0
+                    self._data_index += 1
+                    if self._data_index >= len(self._data):
+                        self._data_index = 0
+                        self._item_progress = 0
 
                 pixels.brightness = anim_value * 0.8
                 pixels.show()
