@@ -1,6 +1,7 @@
 import argparse
 import logging
 import threading
+from typing import cast
 
 from serial import Serial
 from questdb.ingress import Sender
@@ -44,10 +45,13 @@ if __name__ == "__main__":
 
     exit_event = threading.Event()
     threads: list[threading.Thread] = [
-        ControlTread(serial, qdb_sender, exit_event),
-        ReceiveMessageThread(serial, qdb_sender, exit_event),
         LEDThread(exit_event),
+        ReceiveMessageThread(serial, qdb_sender, exit_event),
     ]
+    threads.append(
+        ControlTread(serial, qdb_sender, cast(LEDThread, threads[0]), exit_event)
+    )
+
     for t in threads:
         t.start()
     try:
