@@ -53,7 +53,7 @@ class LEDThread(Thread):
 
         # Loop
         while not self.exit_event.is_set():
-            if self._data:
+            if self._data is not None and len(self._data) > 0:
                 item = self._data[self._data_index]
                 is_reversed = self._data_index % 2 == 1
                 anim_progress = self._item_progress / item
