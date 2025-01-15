@@ -7,6 +7,8 @@ import numpy.typing as npt
 import requests
 from scipy.signal import find_peaks, medfilt
 
+WITH_SENSORS = False
+
 Array = Union[list, npt.NDArray]
 
 

@@ -8,6 +8,8 @@ import serial
 from cobs import cobs
 from questdb.ingress import Sender, TimestampNanos
 
+import utils
+
 USE_ARDUINO_TIMESTAMP = False
 
 
@@ -81,7 +83,7 @@ class ReceiveMessageThread(Thread):
                 case _:
                     level = logging.DEBUG
             logging.log(level, f"Arduino: {msg}")
-        elif msg_type == 3:
+        elif msg_type == 3 and utils.WITH_SENSORS:
             # A normal sensor data call
             millis = int.from_bytes(msg_content[:4], "little", signed=False)
             bpm = int.from_bytes(msg_content[4:6], "little", signed=False)
