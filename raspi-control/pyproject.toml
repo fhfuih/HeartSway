@@ -10,8 +10,8 @@ pigpio = "^1.78"
 requests = "^2.32.3"
 numpy = "^2.2.1"
 rpi-ws281x = {version = "^5.0.0", platform = "linux"}
-adafruit-circuitpython-neopixel = {version = "^6.3.12", platform = "linux"}
-adafruit-blinka = {version = "^8.50.0", platform = "linux"}
+adafruit-circuitpython-neopixel = "^6.3.12"
+adafruit-blinka = "^8.50.0"
 scipy = "^1.15.1"
 
 [build-system]

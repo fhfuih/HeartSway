@@ -42,10 +42,14 @@ class LEDThread(Thread):
     def run(self) -> None:
         # Set up
         pixels = neopixel.NeoPixel(
-            PIXEL_PIN, NUM_PIXELS, brightness=0.2, auto_write=False, pixel_order=ORDER
+            PIXEL_PIN,  # type: ignore
+            NUM_PIXELS,
+            brightness=0,
+            auto_write=False,
+            pixel_order=ORDER,
         )
         pixels.fill((255, 239, 196))  # light yellow
-        pixels.brightness = 0
+        logging.debug("Setting up LEDThread")
 
         # Loop
         while not self.exit_event.is_set():
