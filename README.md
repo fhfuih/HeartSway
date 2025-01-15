@@ -10,10 +10,12 @@ Raspi to Ardunio:
 * type 1: log
     * all the rest in UTF-8 string
 * type 2: IBI
-    * 2B unsigned int: ibi (normally 500~1100) in ms
-    * some more (typically 10 numbers/20B in total, but expect exceptions)
+    * 2B*5 unsigned int: ibi (normally 500~1100) in ms
+    * typically 10 numbers/20B in total, but expect exceptions
 * type 3: inhale-exhale cycle
-    * 10B: the next 5 inhale-exhale cycle
+    * 2B*5: the next 5 inhale-exhale cycle
+    * in the order of in, out, in, out... normally 3000~6000 ms
+    * typically 10 numbers/20B in total, but expect exceptions
 
 Ardunio to Raspi:
 * 1B: type
