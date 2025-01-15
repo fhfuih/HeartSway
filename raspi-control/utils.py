@@ -57,7 +57,7 @@ class SensorDataController:
             )
         return data_to_send
 
-    def get_session_data(self, field: str) -> Optional[Array]:
+    def get_session_data(self, field: str) -> Array:
         return self.data_paginators[field]._data
 
     def reset_data(self) -> None:
@@ -172,3 +172,11 @@ class SensorDataController:
             "ibi": candidate_ibi,
             "breaths": candidate_breaths,
         }
+
+
+def easeInOutQuad(x):
+    return 2 * x * x if x < 0.5 else 1 - np.pow(-2 * x + 2, 2) / 2
+
+
+def easeInOutSine(x):
+    return -(np.cos(np.pi * x) - 1) / 2

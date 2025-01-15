@@ -6,6 +6,7 @@ from serial import Serial
 from questdb.ingress import Sender
 
 from control_thread import ControlTread
+from led_thread import LEDThread
 from receive_message_thread import ReceiveMessageThread
 
 console_handler = logging.StreamHandler()
@@ -45,6 +46,7 @@ if __name__ == "__main__":
     threads: list[threading.Thread] = [
         ControlTread(serial, qdb_sender, exit_event),
         ReceiveMessageThread(serial, qdb_sender, exit_event),
+        LEDThread(exit_event),
     ]
     for t in threads:
         t.start()
