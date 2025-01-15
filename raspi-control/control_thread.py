@@ -48,6 +48,8 @@ class ControlTread(Thread):
         self.__sensor_data_controller = utils.SensorDataController()
 
     def run(self) -> None:
+        self.__update_led_data()
+
         while not self.exit_event.is_set():
             presence_state = (
                 self.__get_mock_presence_state()
@@ -60,10 +62,10 @@ class ControlTread(Thread):
                 self.__last_presence_state = presence_state
                 if presence_state:
                     logging.info("Someone is present")
-                    self.__turn_on()
+                    self.__turn_on_arduino()
                 else:
                     logging.info("Someone is leaving")
-                    self.__turn_off()
+                    self.__turn_off_arduino()
             elif presence_state:
                 # If someone continutes to be present,
                 # Go check if it's time to send the next batch of data
@@ -72,7 +74,7 @@ class ControlTread(Thread):
             time.sleep(0.05)
 
         # Clean up
-        self.__turn_off()
+        self.__turn_off_arduino()
         logging.info("Exiting ControlThread")
 
     def __send_data_if_needed(self) -> None:
@@ -97,7 +99,7 @@ class ControlTread(Thread):
 
             self.__send_message(message)
 
-    def __turn_on(self) -> None:
+    def __turn_on_arduino(self) -> None:
         # Send ON message to Arduino
         self.__send_message(bytes((0, True)))
         self.qdb_sender.row(
@@ -107,14 +109,14 @@ class ControlTread(Thread):
         # Send data to Arduino
         self.__send_data_if_needed()
 
-        # Drive the LED
+    def __update_led_data(self):
         led_thread_ref = self.led_thread()
         if led_thread_ref is not None:
             breath_data = self.__sensor_data_controller.get_session_data("breaths")
             led_thread_ref.show(breath_data)
             logging.info("LEDThread show(data)")
 
-    def __turn_off(self) -> None:
+    def __turn_off_arduino(self) -> None:
         # Send OFF message to Arduino
         self.__send_message(bytes((0, False)))
         self.qdb_sender.row(
@@ -128,6 +130,7 @@ class ControlTread(Thread):
 
         # Prepare next session
         self.__sensor_data_controller.reset_data()
+        self.__update_led_data()
 
     def __send_message(self, message: bytes) -> None:
         data = cobs.encode(message) + b"\x00"
