@@ -39,7 +39,8 @@ class ReceiveMessageThread(Thread):
                     if self.serial_buffer:
                         try:
                             data = cobs.decode(self.serial_buffer)
-                            self.__on_message(data)
+                            if len(data) > 0:
+                                self.__on_message(data)
                         except cobs.DecodeError as e:
                             logging.error(f"Error decoding message: {e}")
                             logging.error(traceback.format_exc())
