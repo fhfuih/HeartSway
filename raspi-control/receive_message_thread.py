@@ -71,7 +71,16 @@ class ReceiveMessageThread(Thread):
         elif msg_type == 1:
             # Arduino logs something
             msg = msg_content.decode("utf-8", errors="replace")
-            logging.info(f"Arduino: {msg}")
+            match msg[0]:
+                case ".":
+                    level = logging.INFO
+                case "?":
+                    level = logging.WARNING
+                case "!":
+                    level = logging.ERROR
+                case _:
+                    level = logging.DEBUG
+            logging.log(level, f"Arduino: {msg}")
         elif msg_type == 3:
             # A normal sensor data call
             millis = int.from_bytes(msg_content[:4], "little", signed=False)
