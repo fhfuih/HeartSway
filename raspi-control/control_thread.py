@@ -35,7 +35,9 @@ class ControlTread(Thread):
         self.exit_event = exit_event
 
         self.__distance_sensor = DistanceSensor(
-            echo=27, trigger=4, pin_factory=PiGPIOFactory()
+            echo=utils.DISTANCE_SENSOR_ECHO,
+            trigger=utils.DISTANCE_SENSOR_TRIG,
+            pin_factory=PiGPIOFactory(),
         )
         self.__last_presence_state = False
 

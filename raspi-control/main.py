@@ -44,7 +44,7 @@ if __name__ == "__main__":
         "Starting Hammock " + "with" if utils.WITH_SENSORS else "without" + "Arduino"
     )
 
-    serial = Serial("/dev/ttyUSB0", 9600)
+    serial = Serial(utils.SERIAL_PORT, 9600)
     qdb_sender = Sender.from_conf("http::addr=127.0.0.1:9000;")
     qdb_sender.establish()
 
