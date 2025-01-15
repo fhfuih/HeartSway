@@ -20,6 +20,9 @@ class LEDThread(Thread):
     ) -> None:
         super().__init__(*args, **kwargs)
         self.exit_event = exit_event
+        self._data = None
+        self._data_index = 0
+        self._item_progress = 0
 
     def show(self, data):
         """Assume data is a list of integers describing the in/out/in/out breathing pattern in ms"""
