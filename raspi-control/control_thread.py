@@ -78,8 +78,8 @@ class ControlTread(Thread):
     def __send_data_if_needed(self) -> None:
         data_to_send = self.__sensor_data_controller.should_send(now=time.time())
 
-        for field, data in data_to_send.items():
-            if not data:
+        for field, field_data in data_to_send.items():
+            if field_data is None:
                 continue
 
             match field:
@@ -91,11 +91,11 @@ class ControlTread(Thread):
                 case _:
                     continue
 
-            data = bytearray(type_byte)
-            for d in data:
-                data.extend(d.to_bytes(2, "little", signed=False))
+            message = bytearray(type_byte)
+            for d in field_data:
+                message.extend(d.to_bytes(2, "little", signed=False))
 
-            self.__send_message(data)
+            self.__send_message(message)
 
     def __turn_on(self) -> None:
         # Send ON message to Arduino

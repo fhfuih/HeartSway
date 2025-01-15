@@ -8,7 +8,7 @@ import requests
 from scipy.signal import find_peaks, medfilt
 
 WITH_SENSORS = True
-SERIAL_PORT = "/dev/ttyACM0"
+SERIAL_PORT = "/dev/ttyUSB0"
 DISTANCE_SENSOR_ECHO = 17
 DISTANCE_SENSOR_TRIG = 4
 
