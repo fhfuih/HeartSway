@@ -49,13 +49,12 @@ if __name__ == "__main__":
     qdb_sender.establish()
 
     exit_event = threading.Event()
+    led_thread = LEDThread(exit_event)
     threads: list[threading.Thread] = [
-        LEDThread(exit_event),
+        ControlTread(serial, qdb_sender, led_thread, exit_event),
         ReceiveMessageThread(serial, qdb_sender, exit_event),
+        # led_thread
     ]
-    threads.append(
-        ControlTread(serial, qdb_sender, cast(LEDThread, threads[0]), exit_event)
-    )
 
     for t in threads:
         t.start()
