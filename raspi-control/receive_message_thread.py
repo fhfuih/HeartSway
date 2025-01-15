@@ -84,7 +84,7 @@ class ReceiveMessageThread(Thread):
                 case _:
                     level = logging.DEBUG
             logging.log(level, f"Arduino: {msg}")
-        elif msg_type == 3 and utils.WITH_SENSORS:
+        elif msg_type == 3:
             # A normal sensor data call
             millis = int.from_bytes(msg_content[:4], "little", signed=False)
             bpm = int.from_bytes(msg_content[4:6], "little", signed=False)

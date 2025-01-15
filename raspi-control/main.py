@@ -40,9 +40,9 @@ if __name__ == "__main__":
     if args.verbose:
         console_handler.setLevel(logging.DEBUG)
 
-    logging.info(
-        "Starting Hammock " + "with" if utils.WITH_SENSORS else "without" + "Arduino"
-    )
+    # logging.info(
+    #     "Starting Hammock " + "with" if utils.WITH_SENSORS else "without" + "Arduino"
+    # )
 
     serial = Serial(utils.SERIAL_PORT, 9600)
     qdb_sender = Sender.from_conf("http::addr=127.0.0.1:9000;")
