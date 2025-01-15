@@ -9,6 +9,7 @@ import utils
 PIXEL_PIN = board.D18
 NUM_PIXELS = 60
 ORDER = neopixel.GRB
+LED_REFRESH_RATE = 0.01
 
 
 class LEDThread(Thread):
@@ -61,9 +62,7 @@ class LEDThread(Thread):
                     anim_progress = 1 - anim_progress
                 anim_value = utils.easeInOutQuad(anim_progress)
 
-                # Assume 1ms per loop/progress.
-                # If changing the progress step, please adjust the sleep time accordingly.
-                self._item_progress += 1
+                self._item_progress += LED_REFRESH_RATE * 1000
                 if self._item_progress > item:
                     self._item_progress = 0
                     self._data_index += 1
@@ -74,7 +73,7 @@ class LEDThread(Thread):
                 pixels.brightness = anim_value * 0.8
                 pixels.show()
 
-            time.sleep(0.001)
+            time.sleep(LED_REFRESH_RATE)
 
         # Clean up: turn off LED
         pixels.deinit()
