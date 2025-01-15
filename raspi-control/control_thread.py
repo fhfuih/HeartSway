@@ -112,6 +112,7 @@ class ControlTread(Thread):
         if led_thread_ref is not None:
             breath_data = self.__sensor_data_controller.get_session_data("breaths")
             led_thread_ref.show(breath_data)
+            logging.info("LEDThread show(data)")
 
     def __turn_off(self) -> None:
         # Send OFF message to Arduino
