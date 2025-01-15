@@ -53,7 +53,7 @@ if __name__ == "__main__":
     threads: list[threading.Thread] = [
         ControlTread(serial, qdb_sender, led_thread, exit_event),
         ReceiveMessageThread(serial, qdb_sender, exit_event),
-        # led_thread
+        led_thread
     ]
 
     for t in threads:

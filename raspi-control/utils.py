@@ -7,7 +7,7 @@ import numpy.typing as npt
 import requests
 from scipy.signal import find_peaks, medfilt
 
-SERIAL_PORT = "/dev/ttyUSB0"
+SERIAL_PORT = "/dev/ttyACM0"
 DISTANCE_SENSOR_ECHO = 17
 DISTANCE_SENSOR_TRIG = 4
 
