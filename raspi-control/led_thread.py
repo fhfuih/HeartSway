@@ -49,7 +49,7 @@ class LEDThread(Thread):
             auto_write=False,
             pixel_order=ORDER,
         )
-        pixels.fill((255, 239, 196))  # light yellow
+        pixels.fill((100, 100, 100))
         logging.debug("Setting up LEDThread")
 
         # Loop
