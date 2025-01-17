@@ -7,13 +7,24 @@
 #include <PulseSensorPlayground.h>
 #include <string.h>
 
-#include "pulsesensor.h"
-#include "vibration.h"
-
 PacketSerial myPacketSerial;
 
-bool in_session = false;
+bool inSession = false;
 
+// Controlling PulseSensor
+PulseSensorPlayground pulseSensor;
+const int PULSE_INPUT_PIN = A0;
+const int PULSE_BLINK_PIN = 0;
+const int PULSE_FADE_PIN = 0;
+const int PULSE_THRESHOLD = 550;
+
+// Controlling Vibration
+const int VIBRATION_PIN = 9;
+const int VIBRATION_BLINK_PIN = LED_BUILTIN;
+const int VIBRATION_DURATION = 2000;
+unsigned long nextVibrationEnd = 0;
+
+// Reading IBI data
 uint16_t ibi_list[30] = {0};
 constexpr auto ibi_list_size = sizeof(ibi_list);
 constexpr auto ibi_list_len = ibi_list_size / sizeof(ibi_list[0]);
@@ -29,40 +40,51 @@ void setup() {
     // absolute ts Convert `now` (4 bytes) to a byte array
     sendTimestamp();
 
-    // Set up components
-    Pulse::setup(A0, 0, 0, 550);
-    Vibration::setup(9, LED_BUILTIN);
-    stop();
+    // Set up pulse sensor
+    pulseSensor.analogInput(PULSE_INPUT_PIN);
+    pulseSensor.setThreshold(PULSE_THRESHOLD);
+    if (PULSE_BLINK_PIN) {
+        pulseSensor.blinkOnPulse(PULSE_BLINK_PIN);
+    }
+    if (PULSE_FADE_PIN) {
+        pulseSensor.fadeOnPulse(PULSE_FADE_PIN);
+    }
+    const bool hasBegun = pulseSensor.begin();
+    if (!hasBegun) {
+        log("?PulseSensorBeginFailed");
+    }
+
+    // Stop all components
+    exitSession();
 }
 
 void loop() {
     auto now = millis();
 
-    // Loop sensors and vibration
-    unsigned int pulse_ts = 0;
-    int bpm_i = 0, ibi_i = 0;
-    Pulse::loop(pulse_ts, bpm_i, ibi_i);
-    uint16_t bpm = bpm_i;
-    uint16_t ibi = ibi_i;
-
-    Vibration::loop(now);
+    // Loop PulseSensors
+    uint16_t bpm = 0;
+    uint16_t ibi = 0;
+    if (pulseSensor.sawStartOfBeat()) {
+        bpm = pulseSensor.getBeatsPerMinute();
+        ibi = pulseSensor.getInterBeatIntervalMs();
+    }
 
     // Send sensor data to raspi
-    if (pulse_ts != 0 || bpm != 0 || ibi != 0) {
+    if (bpm != 0 || ibi != 0) {
         int buffer_length = 1 +  // message type
                             4 +  // pulse_ts
                             2 +  // bpm
                             2;   // ibi
         byte buffer[buffer_length];
         buffer[0] = 3;
-        memcpy(buffer + 1, &pulse_ts, 4);
+        memcpy(buffer + 1, &now, 4);
         memcpy(buffer + 5, &bpm, 2);
         memcpy(buffer + 7, &ibi, 2);
         myPacketSerial.send(buffer, buffer_length);
     }
 
-    // Consume incoming data if needed
-    if (in_session) {
+    if (inSession) {
+        // Consume incoming data if needed
         // Initially, ibi_next_read_millis is 0, so will read immediately
         if (now > ibi_next_read_millis) {
             auto ibi = ibi_list[ibi_list_read_i];
@@ -87,8 +109,23 @@ void loop() {
                 ibi_list_read_i = 0;
                 ibi_next_read_millis = now;
             } else {
-                log("ReadIbi" + String(ibi) + "at" + String(now));
-                Vibration::setVibration(now);
+                /* Consume one IBI value: start vibration now */
+                auto logString = "ReadIbi" + String(ibi) + "at" + String(now);
+                log(logString);
+                analogWrite(VIBRATION_PIN, 200);
+                if (VIBRATION_BLINK_PIN) {
+                    digitalWrite(VIBRATION_BLINK_PIN, HIGH);
+                }
+                nextVibrationEnd = now + VIBRATION_DURATION;
+            }
+        }
+
+        /* Turn off vibration if needed */
+        if (now >= nextVibrationEnd) {
+            log("VibrationOff");
+            analogWrite(VIBRATION_PIN, 0);
+            if (VIBRATION_BLINK_PIN) {
+                digitalWrite(VIBRATION_BLINK_PIN, LOW);
             }
         }
     }
@@ -108,15 +145,13 @@ void onPacketReceived(const byte* buffer, size_t size) {
             if (size != 2) {
                 log("?MsgSize" + String(size) + "Bwant2B");
             } else if (buffer[1] == 0) {
-                in_session = false;
-                stop();
+                exitSession();
                 ibi_list_read_i = 0;
                 ibi_list_write_i = 0;
                 memset(ibi_list, 0, ibi_list_size);
                 log(".ControlOff");
             } else if (buffer[1] == 1) {
-                in_session = true;
-                resume();
+                startSession();
                 log(".ControlOn");
             } else {
                 log("?Control" + String(buffer[1]));
@@ -159,14 +194,15 @@ void sendTimestamp() {
     myPacketSerial.send(now_bytes, 5);
 }
 
-void stop() {
-    Pulse::stop();
-    Vibration::stop();
+void exitSession() {
+    inSession = false;
+    pulseSensor.pause();
+    analogWrite(VIBRATION_PIN, 0);
 }
 
-void resume() {
-    Pulse::resume();
-    Vibration::resume();
+void startSession() {
+    inSession = true;
+    pulseSensor.resume();
 }
 
 void log(String msg) {
