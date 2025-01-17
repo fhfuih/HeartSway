@@ -1,6 +1,7 @@
 import argparse
 import logging
 import threading
+import time
 from typing import cast
 
 from serial import Serial
@@ -66,8 +67,9 @@ if __name__ == "__main__":
         exit_event.set()
         for t in threads:
             t.join()
-        qdb_sender.close(flush=True)
-        logging.info("QuestDB sender closed")
         serial.flush()
+        time.sleep(1)
         serial.close()
         logging.info("Serial closed")
+        qdb_sender.close(flush=True)
+        logging.info("QuestDB sender closed")

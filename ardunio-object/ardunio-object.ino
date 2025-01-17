@@ -6,6 +6,7 @@
 #include <PacketSerial.h>
 #include <PulseSensorPlayground.h>
 #include <string.h>
+#include <limits.h>
 
 PacketSerial myPacketSerial;
 
@@ -19,10 +20,11 @@ const int PULSE_FADE_PIN = 0;
 const int PULSE_THRESHOLD = 550;
 
 // Controlling Vibration
-const int VIBRATION_PIN = 9;
+const int VIBRATION_PIN = 3;
 const int VIBRATION_BLINK_PIN = LED_BUILTIN;
-const int VIBRATION_DURATION = 2000;
-unsigned long nextVibrationEnd = 0;
+const int VIBRATION_DURATION = 100;
+const int VIBRATION_STRENGTH = 100;
+unsigned long nextVibrationEnd = ULONG_MAX;
 
 // Reading IBI data
 uint16_t ibi_list[30] = {0};
@@ -110,23 +112,24 @@ void loop() {
                 ibi_next_read_millis = now;
             } else {
                 /* Consume one IBI value: start vibration now */
-                auto logString = "ReadIbi" + String(ibi) + "at" + String(now);
-                log(logString);
-                analogWrite(VIBRATION_PIN, 200);
+                analogWrite(VIBRATION_PIN, VIBRATION_STRENGTH);
                 if (VIBRATION_BLINK_PIN) {
                     digitalWrite(VIBRATION_BLINK_PIN, HIGH);
                 }
                 nextVibrationEnd = now + VIBRATION_DURATION;
+                auto logString = "ReadIbi" + String(ibi) + "at" + String(now) + "endAt" + String(nextVibrationEnd);
+                log(logString);
             }
         }
 
         /* Turn off vibration if needed */
-        if (now >= nextVibrationEnd) {
+        if (now > nextVibrationEnd) {
             log("VibrationOff");
             analogWrite(VIBRATION_PIN, 0);
             if (VIBRATION_BLINK_PIN) {
                 digitalWrite(VIBRATION_BLINK_PIN, LOW);
             }
+            nextVibrationEnd = ULONG_MAX;
         }
     }
 
