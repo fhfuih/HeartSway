@@ -98,8 +98,8 @@ class SensorDataController:
         breaths = np.zeros((len(peaks_idx) - 1) * 2)
         for i, (p1, p2) in enumerate(zip(peaks_idx[:-1], peaks_idx[1:])):
             t = troughs_idx[np.logical_and(troughs_idx > p1, troughs_idx < p2)]
-            if t.size > 1:
-                t = np.mean(t, dtype=int)[0]
+            if t.shape != ():
+                t = np.mean(t, dtype=int)
             # The first half is the inhale (ibi going down)
             # Inhale time = sum of ibi from the first peak to the trough
             try:
