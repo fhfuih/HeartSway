@@ -7,7 +7,7 @@ import numpy.typing as npt
 import requests
 from scipy.signal import find_peaks, medfilt
 
-SERIAL_PORT = "/dev/ttyACM0"
+SERIAL_PORT = "/dev/ttyUSB0"
 DISTANCE_SENSOR_ECHO = 17
 DISTANCE_SENSOR_TRIG = 4
 
@@ -123,7 +123,7 @@ class SensorDataController:
         return resp["dataset"][0][0]
 
     @staticmethod
-    def get_sensor_data(max_try=20, start_try_idx=0) -> dict[str, Array]:
+    def get_sensor_data(max_try=50, start_try_idx=0) -> dict[str, Array]:
         # Search the past `max_try` sessions to find a preferrable IBI series
         candidate_ibi = []
         candidate_breaths = []
