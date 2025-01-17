@@ -123,6 +123,10 @@ class ControlTread(Thread):
             "controls", columns={"on_off": False}, at=TimestampNanos.now()
         )
 
+        # Flush message
+        self.qdb_sender.flush()
+        self.serial.flush()
+
         # Stop the LED
         led_thread_ref = self.led_thread()
         if led_thread_ref is not None:
