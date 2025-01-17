@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "pulsesensor.h"
+#include "vibration.h"
 
 PacketSerial myPacketSerial;
 
@@ -29,17 +30,22 @@ void setup() {
     sendTimestamp();
 
     // Set up components
-    Pulse::setup(A0, LED_BUILTIN, 5, 550);
-    Pulse::stop();
+    Pulse::setup(A0, 0, 0, 550);
+    Vibration::setup(A5, LED_BUILTIN);
+    stop();
 }
 
 void loop() {
-    // Read sensor data
+    auto now = millis();
+
+    // Loop sensors and vibration
     unsigned int pulse_ts = 0;
     int bpm_i = 0, ibi_i = 0;
     Pulse::loop(pulse_ts, bpm_i, ibi_i);
     uint16_t bpm = bpm_i;
     uint16_t ibi = ibi_i;
+
+    Vibration::loop(now);
 
     // Send sensor data to raspi
     if (pulse_ts != 0 || bpm != 0 || ibi != 0) {
@@ -57,7 +63,6 @@ void loop() {
 
     // Consume incoming data if needed
     if (in_session) {
-        auto now = millis();
         // Initially, ibi_next_read_millis is 0, so will read immediately
         if (now > ibi_next_read_millis) {
             auto ibi = ibi_list[ibi_list_read_i];
@@ -83,6 +88,7 @@ void loop() {
                 ibi_next_read_millis = now;
             } else {
                 log("ReadIbi" + String(ibi) + "at" + String(now));
+                Vibration::setVibration(now + ibi);
             }
         }
     }
@@ -103,14 +109,14 @@ void onPacketReceived(const byte* buffer, size_t size) {
                 log("?MsgSize" + String(size) + "Bwant2B");
             } else if (buffer[1] == 0) {
                 in_session = false;
-                Pulse::stop();
+                stop();
                 ibi_list_read_i = 0;
                 ibi_list_write_i = 0;
                 memset(ibi_list, 0, ibi_list_size);
                 log(".ControlOff");
             } else if (buffer[1] == 1) {
                 in_session = true;
-                Pulse::resume();
+                resume();
                 log(".ControlOn");
             } else {
                 log("?Control" + String(buffer[1]));
@@ -151,6 +157,16 @@ void sendTimestamp() {
     now_bytes[0] = 2;
     memcpy(now_bytes + 1, &now, 4);
     myPacketSerial.send(now_bytes, 5);
+}
+
+void stop() {
+    Pulse::stop();
+    Vibration::stop();
+}
+
+void resume() {
+    Pulse::resume();
+    Vibration::resume();
 }
 
 void log(String msg) {

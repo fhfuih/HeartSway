@@ -10,9 +10,14 @@ unsigned long hardwareTimerNextOutput = 0;
 
 void setup(int PULSE_INPUT, int PULSE_BLINK, int PULSE_FADE, int THRESHOLD) {
     pulseSensor.analogInput(PULSE_INPUT);
-    pulseSensor.blinkOnPulse(PULSE_BLINK);
-    pulseSensor.fadeOnPulse(PULSE_FADE);
     pulseSensor.setThreshold(THRESHOLD);
+
+    if (PULSE_BLINK) {
+        pulseSensor.blinkOnPulse(PULSE_BLINK);
+    }
+    if (PULSE_FADE) {
+        pulseSensor.fadeOnPulse(PULSE_FADE);
+    }
 
     // Now that everything is ready, start reading the PulseSensor signal.
     hasBegun = pulseSensor.begin();

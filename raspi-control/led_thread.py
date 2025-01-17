@@ -46,7 +46,7 @@ class LEDThread(Thread):
             PIXEL_PIN,  # type: ignore
             NUM_PIXELS,
             brightness=0,
-            auto_write=False,
+            auto_write=True,
             pixel_order=ORDER,
         )
         pixels.fill((100, 100, 100))
@@ -71,7 +71,6 @@ class LEDThread(Thread):
                         self._item_progress = 0
 
                 pixels.brightness = anim_value * 0.8
-                pixels.show()
 
             time.sleep(LED_REFRESH_RATE)
 
