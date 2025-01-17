@@ -31,7 +31,7 @@ void setup() {
 
     // Set up components
     Pulse::setup(A0, 0, 0, 550);
-    Vibration::setup(A5, LED_BUILTIN);
+    Vibration::setup(9, LED_BUILTIN);
     stop();
 }
 
@@ -88,7 +88,7 @@ void loop() {
                 ibi_next_read_millis = now;
             } else {
                 log("ReadIbi" + String(ibi) + "at" + String(now));
-                Vibration::setVibration(now + ibi);
+                Vibration::setVibration(now);
             }
         }
     }

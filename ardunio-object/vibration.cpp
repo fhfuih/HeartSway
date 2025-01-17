@@ -4,41 +4,37 @@
 
 namespace Vibration {
 
-const int VIBRATION_DURATION = 100;
+const int VIBRATION_DURATION = 2000;
 
 int PIN = 0;
 int BLINK = 0;
 bool isOn = false;
-unsigned long nextVibrationStart = 0;
 unsigned long nextVibrationEnd = 0;
 
 void setup(int PIN, int BLINK) {
     Vibration::PIN = PIN;
     Vibration::BLINK = BLINK;
-    pinMode(PIN, OUTPUT);
+//    pinMode(PIN, OUTPUT);
 }
 
-void loop(const unsigned long currentTime) {
+void loop(const unsigned long now) {
     if (!isOn)
         return;
 
-    if (currentTime >= nextVibrationEnd) {
-        isOn = false;
+    if (now >= nextVibrationEnd) {
         analogWrite(PIN, 0);
         if (BLINK) {
             digitalWrite(BLINK, LOW);
         }
-    } else if (currentTime >= nextVibrationStart) {
-        analogWrite(PIN, 255);
-        if (BLINK) {
-            digitalWrite(BLINK, HIGH);
-        }
     }
 }
 
-void setVibration(unsigned long nextStart) {
-    nextVibrationStart = nextStart;
-    nextVibrationEnd = nextStart + VIBRATION_DURATION;
+void setVibration(unsigned long now) {
+    analogWrite(PIN, 200);
+    if (BLINK) {
+        digitalWrite(BLINK, HIGH);
+    }
+    nextVibrationEnd = now + VIBRATION_DURATION;
 }
 
 void stop() {
