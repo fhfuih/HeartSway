@@ -102,13 +102,8 @@ class SensorDataController:
                 t = np.mean(t, dtype=int)
             # The first half is the inhale (ibi going down)
             # Inhale time = sum of ibi from the first peak to the trough
-            try:
-                # Why?
-                breaths[i * 2] = np.sum(ibi[p1:t])  # type: ignore
-                breaths[i * 2 + 1] = np.sum(ibi[t:p2])  # type: ignore
-            except TypeError:
-                logging.error(f"Error calculating breaths {p1} {t} {p2} {ibi}")
-                raise
+            breaths[i * 2] = np.sum(ibi[p1:t])  # type: ignore
+            breaths[i * 2 + 1] = np.sum(ibi[t:p2])  # type: ignore
 
         return breaths
 
