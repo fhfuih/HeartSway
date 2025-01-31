@@ -3,6 +3,7 @@ import traceback
 from threading import Thread, Event
 import time
 from typing import Optional
+import struct
 
 import serial
 from cobs import cobs
@@ -59,39 +60,44 @@ class ReceiveMessageThread(Thread):
     def __on_message(self, data: bytes) -> None:
         msg_type = data[0]
         msg_content = data[1:]
-        if msg_type == 2:
-            # A millis() call from Ardunio at start
-            now = time.time_ns()
-            if (millis_len := len(msg_content)) != 4:
-                logging.warning(
-                    f"Invalid millis() call from Arduino. Expected 4B but got {millis_len}B"
+        match msg_type:
+            case 2:  # A millis() call from Ardunio at start
+                now = time.time_ns()
+                if (millis_len := len(msg_content)) != 4:
+                    logging.warning(
+                        f"Invalid millis() call from Arduino. Expected 4B but got {millis_len}B"
+                    )
+                millis = int.from_bytes(msg_content[:4], "little", signed=False)
+                self.arduino_start_ns = now - millis * 1_000_000
+                logging.info(
+                    f"Received Arduino millis {millis} at {now}. Set Arduino start time to {time.ctime(self.arduino_start_ns // 1e9)}"
                 )
-            millis = int.from_bytes(msg_content[:4], "little", signed=False)
-            self.arduino_start_ns = now - millis * 1_000_000
-            logging.info(
-                f"Received Arduino millis {millis} at {now}. Set Arduino start time to {time.ctime(self.arduino_start_ns // 1e9)}"
-            )
-        elif msg_type == 1:
-            # Arduino logs something
-            msg = msg_content.decode("utf-8", errors="replace")
-            match msg[0]:
-                case ".":
-                    level = logging.INFO
-                case "?":
-                    level = logging.WARNING
-                case "!":
-                    level = logging.ERROR
-                case _:
-                    level = logging.DEBUG
-            logging.log(level, f"Arduino: {msg}")
-        elif msg_type == 3:
-            # A normal sensor data call
-            millis = int.from_bytes(msg_content[:4], "little", signed=False)
-            bpm = int.from_bytes(msg_content[4:6], "little", signed=False)
-            ibi = int.from_bytes(msg_content[6:8], "little", signed=False)
-            data_ns = self.__get_arduino_timestamp(millis)
-            logging.debug(f"Received message@{data_ns}: BPM={bpm}, IBI={ibi}")
-            self.qdb_sender.row("sensors", columns={"bpm": bpm, "ibi": ibi}, at=data_ns)
+            case 1:  # Arduino logs something
+                msg = msg_content.decode("utf-8", errors="replace")
+                match msg[0]:
+                    case ".":
+                        level = logging.INFO
+                    case "?":
+                        level = logging.WARNING
+                    case "!":
+                        level = logging.ERROR
+                    case _:
+                        level = logging.DEBUG
+                logging.log(level, f"Arduino: {msg}")
+            case 3:  # A normal pulse sensor data call
+                millis = int.from_bytes(msg_content[:4], "little", signed=False)
+                bpm = int.from_bytes(msg_content[4:6], "little", signed=False)
+                ibi = int.from_bytes(msg_content[6:8], "little", signed=False)
+                data_ns = self.__get_arduino_timestamp(millis)
+                logging.debug(f"Received message@{data_ns}: BPM={bpm}, IBI={ibi}")
+                self.qdb_sender.row(
+                    "sensors", columns={"bpm": bpm, "ibi": ibi}, at=data_ns
+                )
+            case 4:  # A stretch sensor data call
+                millis = int.from_bytes(msg_content[:4], "little", signed=False)
+                data_ns = self.__get_arduino_timestamp(millis)
+                stretch = struct.unpack("f", msg_content[4:8])
+                self.qdb_sender.row("stretch", columns={"primary": stretch}, at=data_ns)
 
     def __get_arduino_timestamp(self, millis: Optional[int]) -> TimestampNanos:
         if not USE_ARDUINO_TIMESTAMP or self.arduino_start_ns is None or millis is None:

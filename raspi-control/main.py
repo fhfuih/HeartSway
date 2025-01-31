@@ -8,7 +8,7 @@ from serial import Serial
 from questdb.ingress import Sender
 
 from control_thread import ControlTread
-from led_thread import LEDThread
+# from led_thread import LEDThread
 from receive_message_thread import ReceiveMessageThread
 import utils
 
@@ -50,11 +50,11 @@ if __name__ == "__main__":
     qdb_sender.establish()
 
     exit_event = threading.Event()
-    led_thread = LEDThread(exit_event)
+    # led_thread = LEDThread(exit_event)
     threads: list[threading.Thread] = [
-        ControlTread(serial, qdb_sender, led_thread, exit_event),
+        ControlTread(serial, qdb_sender, exit_event),
         ReceiveMessageThread(serial, qdb_sender, exit_event),
-        led_thread
+        # led_thread
     ]
 
     for t in threads:

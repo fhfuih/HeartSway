@@ -11,7 +11,7 @@ from gpiozero import DistanceSensor
 from gpiozero.pins.pigpio import PiGPIOFactory
 from questdb.ingress import Sender, TimestampNanos
 
-from led_thread import LEDThread
+# from led_thread import LEDThread
 import utils
 
 USE_MOCK_SENSOR = False
@@ -22,7 +22,7 @@ class ControlTread(Thread):
         self,
         serial: serial.Serial,
         qdb_sender: Sender,
-        led_thread: LEDThread,
+        # led_thread: LEDThread,
         exit_event: Event,
         *args,
         **kwargs,
@@ -31,7 +31,7 @@ class ControlTread(Thread):
 
         self.serial = serial
         self.qdb_sender = qdb_sender
-        self.led_thread = weakref.ref(led_thread)
+        # self.led_thread = weakref.ref(led_thread)
         self.exit_event = exit_event
 
         self.__distance_sensor = DistanceSensor(
@@ -48,7 +48,7 @@ class ControlTread(Thread):
         self.__sensor_data_controller = utils.SensorDataController()
 
     def run(self) -> None:
-        self.__update_led_data()
+        # self.__update_led_data()
 
         while not self.exit_event.is_set():
             presence_state = (
@@ -109,12 +109,12 @@ class ControlTread(Thread):
         # Send data to Arduino
         self.__send_data_if_needed()
 
-    def __update_led_data(self):
-        led_thread_ref = self.led_thread()
-        if led_thread_ref is not None:
-            breath_data = self.__sensor_data_controller.get_session_data("breaths")
-            led_thread_ref.show(breath_data)
-            logging.info("LEDThread show(data)")
+    # def __update_led_data(self):
+    #     led_thread_ref = self.led_thread()
+    #     if led_thread_ref is not None:
+    #         breath_data = self.__sensor_data_controller.get_session_data("breaths")
+    #         led_thread_ref.show(breath_data)
+    #         logging.info("LEDThread show(data)")
 
     def __turn_off_arduino(self) -> None:
         # Send OFF message to Arduino
@@ -128,13 +128,13 @@ class ControlTread(Thread):
         self.serial.flush()
 
         # Stop the LED
-        led_thread_ref = self.led_thread()
-        if led_thread_ref is not None:
-            led_thread_ref.stop()
+        # led_thread_ref = self.led_thread()
+        # if led_thread_ref is not None:
+        #     led_thread_ref.stop()
 
         # Prepare next session
         self.__sensor_data_controller.reset_data()
-        self.__update_led_data()
+        # self.__update_led_data()
 
     def __send_message(self, message: bytes) -> None:
         data = cobs.encode(message) + b"\x00"

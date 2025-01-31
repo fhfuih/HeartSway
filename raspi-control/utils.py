@@ -123,18 +123,9 @@ class SensorDataController:
         candidate_ibi = []
         candidate_breaths = []
         for last_person_index in range(start_try_idx, start_try_idx + max_try):
-            query = f"""WITH e AS (SELECT *, row_number() OVER (ORDER BY timestamp DESC) FROM controls WHERE on_off = false),
-    s AS (SELECT * FROM controls WHERE on_off = true),
-    r AS (SELECT e.timestamp AS et, s.timestamp AS st, FROM e ASOF JOIN s WHERE e.row_number = {last_person_index + 1})
-    SELECT ibi FROM sensors ss JOIN r ON ss.timestamp >= r.st AND ss.timestamp <= r.et"""
-            resp = requests.get("http://localhost:9000/exec", params={"query": query})
-
-            if not resp.ok:
-                logging.error("Error getting sensor data %s", resp.text)
-                continue
-
-            resp = resp.json()
-            this_ibi = [x for x2d in resp["dataset"] for x in x2d]  # flatten
+            this_ibi = SensorDataController.get_sensor_database_column(
+                last_person_index, database="sensors", column="ibi"
+            )
 
             if len(this_ibi) == 0:
                 # No data found, try next session
@@ -177,6 +168,25 @@ class SensorDataController:
             "ibi": candidate_ibi,
             "breaths": candidate_breaths,
         }
+
+    @staticmethod
+    def get_sensor_database_column(
+        idx, database="sensors", column="ibi"
+    ) -> Optional[Array]:
+        query = f"""WITH e AS (SELECT *, row_number() OVER (ORDER BY timestamp DESC) FROM controls WHERE on_off = false),
+s AS (SELECT * FROM controls WHERE on_off = true),
+r AS (SELECT e.timestamp AS et, s.timestamp AS st, FROM e ASOF JOIN s WHERE e.row_number = {idx + 1})
+SELECT {column} FROM {database} ss JOIN r ON ss.timestamp >= r.st AND ss.timestamp <= r.et"""
+        resp = requests.get("http://localhost:9000/exec", params={"query": query})
+
+        if not resp.ok:
+            logging.error("Error getting sensor data %s", resp.text)
+            return None
+
+        resp = resp.json()
+        series = [x for x2d in resp["dataset"] for x in x2d]
+
+        return series
 
 
 def easeInOutQuad(x):
