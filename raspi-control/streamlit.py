@@ -12,7 +12,9 @@ def load_data():
     global TOTAL
     if TOTAL is None:
         TOTAL = SensorDataController.get_total_session_count()
-    ibi_series = SensorDataController.get_sensor_database_column()
+    ibi_series = SensorDataController.get_sensor_database_column(
+        2, database="sensors", column="ibi"
+    )
     return ibi_series
 
 
