@@ -89,7 +89,7 @@ class ReceiveMessageThread(Thread):
                 bpm = int.from_bytes(msg_content[4:6], "little", signed=False)
                 ibi = int.from_bytes(msg_content[6:8], "little", signed=False)
                 data_ns = self.__get_arduino_timestamp(millis)
-                logging.debug(f"Received message@{data_ns}: BPM={bpm}, IBI={ibi}")
+                logging.debug(f"Received HR@{data_ns}: BPM={bpm}, IBI={ibi}")
                 self.qdb_sender.row(
                     "sensors", columns={"bpm": bpm, "ibi": ibi}, at=data_ns
                 )
@@ -97,6 +97,7 @@ class ReceiveMessageThread(Thread):
                 millis = int.from_bytes(msg_content[:4], "little", signed=False)
                 data_ns = self.__get_arduino_timestamp(millis)
                 stretch = struct.unpack("f", msg_content[4:8])
+                logging.debug(f"Received stretch@{data_ns}: {stretch}")
                 self.qdb_sender.row("stretch", columns={"primary": stretch}, at=data_ns)
 
     def __get_arduino_timestamp(self, millis: Optional[int]) -> TimestampNanos:

@@ -50,6 +50,13 @@ int ibi_list_write_i = 0;
 int ibi_list_read_i = 0;
 unsigned long ibi_next_read_millis = 0;
 
+void onPacketReceived(const byte* buffer, size_t size);
+void sendControl(bool on);
+void sendTimestamp(unsigned long now = millis());
+void exitSession();
+void startSession();
+void log(String msg);
+
 void setup() {
     myPacketSerial.begin(9600);
     myPacketSerial.setPacketHandler(&onPacketReceived);
