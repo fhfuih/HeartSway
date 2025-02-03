@@ -8,8 +8,6 @@ import requests
 from scipy.signal import find_peaks, medfilt
 
 SERIAL_PORT = "/dev/ttyUSB0"
-DISTANCE_SENSOR_ECHO = 17
-DISTANCE_SENSOR_TRIG = 4
 
 
 Array = Union[list, npt.NDArray]

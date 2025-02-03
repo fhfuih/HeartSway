@@ -11,8 +11,8 @@
 
 PacketSerial myPacketSerial;
 
-bool inRange = false;
-bool isTouching = false;
+bool inRange = false; // If using distance sensor --- attached to Pi and transmitted to Arduino
+bool isTouching = false; // Is using capacitative sensor --- attached to Arduino
 
 // Controlling PulseSensor
 PulseSensorPlayground pulseSensor;

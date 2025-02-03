@@ -1,14 +1,15 @@
 [project]
 name = "hammock"
 version = "0.1.0"
-description = "Add your description here"
+description = ""
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10,<3.13"
 dependencies = [
     "cobs>=1.2.1",
     "gpiozero>=2.0.1 ; sys_platform == 'darwin'",
     "numpy>=2.2.2",
     "pigpio>=1.78",
+    "psycopg[binary]>=3.2.4",
     "pyserial>=3.5",
     "questdb>=2.0.3",
     "requests>=2.32.3",
