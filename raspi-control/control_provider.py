@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import time
+from typing import Optional
 
 from gpiozero import DistanceSensor
 from gpiozero.pins.pigpio import PiGPIOFactory
@@ -42,5 +43,15 @@ class MockControlProvider(BaseControlProvider):
 
 
 class AlwaysOnControlProvider(BaseControlProvider):
+    def __init__(self):
+        super().__init__()
+        self.__first_get: Optional[float] = None
+        self.__to_return = False
+
     def get_presence_state(self):
-        return True
+        if self.__first_get is None:
+            self.__first_get = time.time()
+        elif not self.__to_return:
+            if time.time() - self.__first_get > 5:
+                self.__to_return = True
+        return self.__to_return

@@ -188,6 +188,7 @@ void loop() {
             memcpy(buffer + 1, &now, 4);
             memcpy(buffer + 5, &reading, 4);
             myPacketSerial.send(buffer, buffer_length);
+            log("Stretch" + String(reading));
         }
     }
 
