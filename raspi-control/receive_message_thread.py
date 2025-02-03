@@ -96,7 +96,7 @@ class ReceiveMessageThread(Thread):
             case 4:  # A stretch sensor data call
                 millis = int.from_bytes(msg_content[:4], "little", signed=False)
                 data_ns = self.__get_arduino_timestamp(millis)
-                stretch = struct.unpack("f", msg_content[4:8])
+                [stretch] = struct.unpack("f", msg_content[4:8])
                 logging.debug(f"Received stretch@{data_ns}: {stretch}")
                 self.qdb_sender.row("stretch", columns={"primary": stretch}, at=data_ns)
             case _:  # Unknown message
