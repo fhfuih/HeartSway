@@ -130,6 +130,7 @@ class SensorDataController:
             else:
                 this_ibi = np.array(this_bpm)
                 this_ibi = 60_000 / this_ibi  # Convert BPM to IBI
+                this_ibi = this_ibi.astype(int)
 
             if len(this_ibi) == 0:
                 # No data found, try next session
