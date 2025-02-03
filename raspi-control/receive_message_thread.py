@@ -99,6 +99,8 @@ class ReceiveMessageThread(Thread):
                 stretch = struct.unpack("f", msg_content[4:8])
                 logging.debug(f"Received stretch@{data_ns}: {stretch}")
                 self.qdb_sender.row("stretch", columns={"primary": stretch}, at=data_ns)
+            case _:  # Unknown message
+                logging.warning(f"Unknown message type {msg_type}: {msg_content}")
 
     def __get_arduino_timestamp(self, millis: Optional[int]) -> TimestampNanos:
         if not USE_ARDUINO_TIMESTAMP or self.arduino_start_ns is None or millis is None:
