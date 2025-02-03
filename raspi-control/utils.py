@@ -121,9 +121,15 @@ class SensorDataController:
         candidate_ibi = []
         candidate_breaths = []
         for last_person_index in range(start_try_idx, start_try_idx + max_try):
-            this_ibi = SensorDataController.get_sensor_database_column(
-                last_person_index, database="sensors", column="ibi"
+            this_bpm = SensorDataController.get_sensor_database_column(
+                last_person_index, database="sensors", column="bpm"
             )
+
+            if this_bpm is None:
+                this_ibi = []
+            else:
+                this_ibi = np.array(this_bpm)
+                this_ibi = 60_000 / this_ibi  # Convert BPM to IBI
 
             if len(this_ibi) == 0:
                 # No data found, try next session

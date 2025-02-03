@@ -167,7 +167,6 @@ void loop() {
 
         /* Turn off vibration if needed */
         if (now > nextVibrationEnd) {
-            log("VibrationOff");
             analogWrite(VIBRATION_PIN, 0);
             if (VIBRATION_BLINK_PIN) {
                 digitalWrite(VIBRATION_BLINK_PIN, LOW);
@@ -188,7 +187,6 @@ void loop() {
             memcpy(buffer + 1, &now, 4);
             memcpy(buffer + 5, &reading, 4);
             myPacketSerial.send(buffer, buffer_length);
-            log("Stretch" + String(reading));
         }
     }
 
