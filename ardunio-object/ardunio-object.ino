@@ -24,7 +24,7 @@ const int PULSE_THRESHOLD = 550;
 // Controlling stretch sensor
 const int STRETCH_1 = A1;
 const int STRETCH_RESISTOR = 1E4;
-int next_read_stretch_time = 0;
+unsigned long next_read_stretch_time = 0;
 
 // Controlling Vibration
 const int VIBRATION_PIN = 3;
