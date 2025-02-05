@@ -9,8 +9,6 @@ import serial
 from cobs import cobs
 from questdb.ingress import Sender, TimestampNanos
 
-import utils
-
 USE_ARDUINO_TIMESTAMP = False
 
 

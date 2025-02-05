@@ -1,13 +1,20 @@
+from datetime import datetime
 import time
-from typing import NamedTuple, Union
+from typing import Union
 import logging
 from typing import Optional
 import numpy as np
 import numpy.typing as npt
 import requests
 from scipy.signal import find_peaks, medfilt
+from pathlib import Path
+import matplotlib
+import matplotlib.pyplot as plt
 
 SERIAL_PORT = "/dev/ttyUSB0"
+
+LOG_DIR = Path(__file__).parent / "logs"
+LOG_DIR.mkdir(exist_ok=True)
 
 
 Array = Union[list, npt.NDArray]
@@ -164,15 +171,32 @@ class SensorDataController:
 
         if len(candidate_breaths) == 0:
             logging.warning("No preferrable data within the last %d sessions", max_try)
-        else:
-            logging.debug("Choose #%d session's data", last_person_index)
-            logging.debug("IBI: %s", candidate_ibi)
-            logging.debug("Breath: %s", candidate_breaths)
+            return {
+                "ibi": [],
+                "breaths": [],
+                "stretch": [],
+            }
 
-        return {
+        stretch = SensorDataController.get_sensor_database_column(
+            last_person_index, database="stretch", column="primary"
+        )
+        if stretch is None:
+            stretch = []
+
+        logging.info("Choose #%d session's data", last_person_index)
+        logging.debug("IBI length: %d", len(candidate_ibi))
+        logging.debug("Breath length: %d", len(candidate_breaths))
+        logging.debug("Stretch length: %d", len(stretch))
+
+        result = {
             "ibi": candidate_ibi,
             "breaths": candidate_breaths,
+            "stretch": stretch,
         }
+
+        SensorDataController.save_data_to_plot(result)
+
+        return result
 
     @staticmethod
     def get_sensor_database_column(
@@ -192,6 +216,23 @@ SELECT {column} FROM {database} ss JOIN r ON ss.timestamp >= r.st AND ss.timesta
         series = [x for x2d in resp["dataset"] for x in x2d]
 
         return series
+
+    @staticmethod
+    def save_data_to_plot(data: dict[str, Array]) -> None:
+        dt = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        if "ibi" in data:
+            fig, ax = plt.subplots()
+            plt.plot(data["ibi"])
+            fig.savefig(LOG_DIR / f"ibi-{dt}.jpg")
+        if "stretch" in data:
+            fig, ax = plt.subplots()
+            formatter = matplotlib.ticker.FuncFormatter(
+                lambda sec, x: time.strftime("%M:%S", time.gmtime(sec))
+            )
+            ax.xaxis.set_major_formatter(formatter)
+            plt.plot(data["stretch"])
+            plt.xticks(np.arange(0, len(data["stretch"]), 30))
+            plt.savefig(LOG_DIR / f"stretch-{dt}.jpg")
 
 
 def easeInOutQuad(x):
