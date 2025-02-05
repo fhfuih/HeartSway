@@ -50,7 +50,7 @@ class ControlTread(Thread):
                     self.__turn_on_arduino()
                 else:
                     logging.info("Someone is leaving")
-                    self.__turn_off_arduino()
+                    self.__turn_off_arduino(prepare_next_session=True)
             elif presence_state:
                 # If someone continutes to be present,
                 # Go check if it's time to send the next batch of data
@@ -58,8 +58,8 @@ class ControlTread(Thread):
 
             time.sleep(0.05)
 
-        # Clean up
-        self.__turn_off_arduino()
+        # Clean up on exit
+        self.__turn_off_arduino(prepare_next_session=False)
         logging.info("Exiting ControlThread")
 
     def __send_data_if_needed(self) -> None:
@@ -101,7 +101,7 @@ class ControlTread(Thread):
         # Send data to Arduino
         self.__send_data_if_needed()
 
-    def __turn_off_arduino(self) -> None:
+    def __turn_off_arduino(self, prepare_next_session=True) -> None:
         # Send OFF message to Arduino
         self.__send_message(bytes((0, False)))
         self.qdb_sender.row(
@@ -118,8 +118,9 @@ class ControlTread(Thread):
         #     led_thread_ref.stop()
 
         # Prepare next session
-        self.__sensor_data_controller.reset_data()
-        # self.__update_led_data()
+        if prepare_next_session:
+            self.__sensor_data_controller.reset_data()
+            # self.__update_led_data()
 
     def __send_message(self, message: bytes) -> None:
         data = cobs.encode(message) + b"\x00"
