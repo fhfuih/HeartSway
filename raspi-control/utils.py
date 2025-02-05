@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 SERIAL_PORT = "/dev/ttyUSB0"
 
-LOG_DIR = Path(__file__).parent / "logs"
+LOG_DIR = Path(__file__).parent.parent / "logs"
 LOG_DIR.mkdir(exist_ok=True)
 
 
