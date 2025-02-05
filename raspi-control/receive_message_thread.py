@@ -28,6 +28,7 @@ class ReceiveMessageThread(Thread):
         self.serial_buffer = bytearray()
 
         self.arduino_start_ns: Optional[int] = None
+        self.__first_hr_data_ns: Optional[int] = None
 
     def run(self) -> None:
         while not self.exit_event.is_set():
@@ -88,9 +89,15 @@ class ReceiveMessageThread(Thread):
                 ibi = int.from_bytes(msg_content[6:8], "little", signed=False)
                 data_ns = self.__get_arduino_timestamp(millis)
                 logging.debug(f"Received HR@{data_ns}: BPM={bpm}, IBI={ibi}")
-                self.qdb_sender.row(
-                    "sensors", columns={"bpm": bpm, "ibi": ibi}, at=data_ns
-                )
+
+                # Only save the data if it's 30 seconds after the first HR data
+                now = time.time_ns()
+                if self.__first_hr_data_ns is None:
+                    self.__first_hr_data_ns = now
+                elif self.__first_hr_data_ns > now + 30_000_000_000:
+                    self.qdb_sender.row(
+                        "sensors", columns={"bpm": bpm, "ibi": ibi}, at=data_ns
+                    )
             case 4:  # A stretch sensor data call
                 millis = int.from_bytes(msg_content[:4], "little", signed=False)
                 data_ns = self.__get_arduino_timestamp(millis)
