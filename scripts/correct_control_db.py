@@ -1,9 +1,9 @@
 import time
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 import psycopg
 from questdb.ingress import Sender
-
 
 con = psycopg.connect(
     "dbname='qdb' user='admin' host='tsrb' port='8812' password='quest'"

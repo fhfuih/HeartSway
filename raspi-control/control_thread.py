@@ -1,14 +1,14 @@
 import logging
-from threading import Thread, Event
 import time
+from threading import Event, Thread
 
-from cobs import cobs
 import serial
-from questdb.ingress import Sender, TimestampNanos
 
 # from led_thread import LEDThread
 import utils
+from cobs import cobs
 from control_provider import AlwaysOnControlProvider
+from questdb.ingress import Sender, TimestampNanos
 
 CONTROL_PROVIDER = AlwaysOnControlProvider
 

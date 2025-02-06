@@ -2,15 +2,14 @@ import argparse
 import logging
 import threading
 import time
-from typing import cast
 
-from serial import Serial
+import utils
+from control_thread import ControlTread
 from questdb.ingress import Sender
 
-from control_thread import ControlTread
 # from led_thread import LEDThread
 from receive_message_thread import ReceiveMessageThread
-import utils
+from serial import Serial
 
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)

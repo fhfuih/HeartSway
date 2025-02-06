@@ -1,9 +1,9 @@
 import logging
-from threading import Event, Thread
 import time
+from threading import Event, Thread
+
 import board
 import neopixel
-
 import utils
 
 PIXEL_PIN = board.D18

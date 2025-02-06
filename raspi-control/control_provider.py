@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
 import time
+from abc import ABC, abstractmethod
 from typing import Optional
 
 from gpiozero import DistanceSensor

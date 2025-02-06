@@ -1,9 +1,9 @@
 import logging
-import traceback
-from threading import Thread, Event
-import time
-from typing import Optional
 import struct
+import time
+import traceback
+from threading import Event, Thread
+from typing import Optional
 
 import serial
 from cobs import cobs
