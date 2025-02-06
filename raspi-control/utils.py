@@ -223,16 +223,43 @@ SELECT {column} FROM {database} ss JOIN r ON ss.timestamp >= r.st AND ss.timesta
         if "ibi" in data:
             fig, ax = plt.subplots()
             plt.plot(data["ibi"])
-            fig.savefig(LOG_DIR / f"ibi-{dt}.jpg")
+            file = LOG_DIR / f"ibi-{dt}.jpg"
+            fig.savefig(file)
+            logging.info(f"Saved IBI plot to {file}")
         if "stretch" in data:
+            d = pd.Series(data["stretch"])
+            window_size = 100
+            rolling_mean = d.rolling(window=window_size, center=True).mean()
+            rolling_std = d.rolling(window=window_size, center=True).std()
+            threshold = 3
+            is_outlier = (d > rolling_mean + threshold * rolling_std) | (
+                d < rolling_mean - threshold * rolling_std
+            )
+            d[is_outlier] = rolling_mean[is_outlier]
+            algo = rpt.Pelt(model="rbf").fit(d.values)
+            change_points = algo.predict(pen=10)
+
             fig, ax = plt.subplots()
-            formatter = matplotlib.ticker.FuncFormatter(
+            ax.xaxis.set_major_formatter(
                 lambda sec, x: time.strftime("%M:%S", time.gmtime(sec))
             )
-            ax.xaxis.set_major_formatter(formatter)
-            plt.plot(data["stretch"])
-            plt.xticks(np.arange(0, len(data["stretch"]), 30))
-            plt.savefig(LOG_DIR / f"stretch-{dt}.jpg")
+            ax.xaxis.set_minor_formatter(
+                lambda sec, x: time.strftime("%M", time.gmtime(sec))
+                if sec % 60 == 0
+                else ""
+            )
+            ax.xaxis.set_minor_locator(matplotlib.ticker.MultipleLocator(30))
+            ax.xaxis.set_major_locator(matplotlib.ticker.FixedLocator(change_points))
+            ax.tick_params(which="minor", axis="x", labelsize=7, pad=-8)
+            ax.grid(which="minor", axis="x")
+            for cp in change_points:
+                plt.axvline(cp, color="red", linestyle="--")
+            ax.plot(data["stretch"])
+            ax.set_xticks(change_points)
+            fig.tight_layout()
+            file = LOG_DIR / f"stretch-{dt}.jpg"
+            fig.savefig(file)
+            logging.info(f"Saved stretch plot to {file}")
 
 
 def easeInOutQuad(x):

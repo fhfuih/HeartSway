@@ -289,6 +289,7 @@ dependencies = [
     { name = "pyserial" },
     { name = "questdb" },
     { name = "requests" },
+    { name = "ruptures" },
     { name = "scipy" },
     { name = "streamlit" },
 ]
@@ -304,6 +305,7 @@ requires-dist = [
     { name = "pyserial", specifier = ">=3.5" },
     { name = "questdb", specifier = ">=2.0.3" },
     { name = "requests", specifier = ">=2.32.3" },
+    { name = "ruptures", specifier = ">=1.1.9" },
     { name = "scipy", specifier = ">=1.15.1" },
     { name = "streamlit", specifier = ">=1.41.1" },
 ]
@@ -969,6 +971,30 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/11/23/cd8f566de444a137bc1ee5795e47069a947e60810ba4152886fe5308e1b7/rpds_py-0.22.3-pp310-pypy310_pp73-musllinux_1_2_i686.whl", hash = "sha256:e35ba67d65d49080e8e5a1dd40101fccdd9798adb9b050ff670b7d74fa41c566", size = 583780 },
     { url = "https://files.pythonhosted.org/packages/8d/63/79c3602afd14d501f751e615a74a59040328da5ef29ed5754ae80d236b84/rpds_py-0.22.3-pp310-pypy310_pp73-musllinux_1_2_x86_64.whl", hash = "sha256:26fd7cac7dd51011a245f29a2cc6489c4608b5a8ce8d75661bb4a1066c52dfbe", size = 553619 },
     { url = "https://files.pythonhosted.org/packages/9f/2e/c5c1689e80298d4e94c75b70faada4c25445739d91b94c211244a3ed7ed1/rpds_py-0.22.3-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:177c7c0fce2855833819c98e43c262007f42ce86651ffbb84f37883308cb0e7d", size = 233338 },
+]
+
+[[package]]
+name = "ruptures"
+version = "1.1.9"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "scipy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c5/16/7fe5a9ee6e5c8fddce3a7309a7fa5186df10417676779c24a02f650f7e3b/ruptures-1.1.9.tar.gz", hash = "sha256:aa940f3c02235dab94753ff15689f8ebaca10c83da71cb29cbb7f981dfa362dc", size = 308115 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8d/90/99b30bf17f5b6f7d982e841fcebf43cc13747540af8acbb02229e197c5fc/ruptures-1.1.9-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:8ab2569b94f6e6fb397379c4085516817ac51101970f4392d5f9f383ba45b02f", size = 489524 },
+    { url = "https://files.pythonhosted.org/packages/ac/87/4db91b71f8225df5793a7b1322f0fc370c4b748179a6b44aebe21b1d4a3a/ruptures-1.1.9-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:aebd937375305d5247e3559158dbb1249f358540a11903a174a68fd2ce7ffeb9", size = 1205474 },
+    { url = "https://files.pythonhosted.org/packages/a4/b7/d9051799ed99416325083d641202ddbdfa9eb306912010e1fa669ccce61d/ruptures-1.1.9-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b8071bd94c3acb09de3ddc09f88e002442e233a9431f1964d7949cf06c4fb315", size = 1216876 },
+    { url = "https://files.pythonhosted.org/packages/c9/e8/08f41410f178de885f6b84126dce71bc58b84cc2424da1e65d5ef3b6f2c5/ruptures-1.1.9-cp310-cp310-win_amd64.whl", hash = "sha256:06da516a38ac9ab0525f0c3791feaf1fb2c4704d85df6197578f8e1b8b808113", size = 473024 },
+    { url = "https://files.pythonhosted.org/packages/15/a6/9a5f62af2767d86bcc33c746bf421e602351ceee3b57e7b785f9601e5a38/ruptures-1.1.9-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:ec33c2e42156b4de8fa52f2b1194c94d9b36b5e68b49984b2103c40c24606267", size = 489083 },
+    { url = "https://files.pythonhosted.org/packages/c8/f9/bad314d48659e81027e4a46a2a1157e9601818bfb3af7ef8939b9ac0ef58/ruptures-1.1.9-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4aaf893069368957a29883c209f57a782278cc6a85a2e1fb6193477a45ae115c", size = 1274771 },
+    { url = "https://files.pythonhosted.org/packages/b3/3d/68a31e22182c9e77030136ecfbadc6ff66faeb143f70f44ff3cf27953d9d/ruptures-1.1.9-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2f8899fc23c762245b3b2bf532ee366d285c98c3ffc4a66746a4daf524997cd0", size = 1287975 },
+    { url = "https://files.pythonhosted.org/packages/e2/c9/d8a4503418b101ac34edc313950dfb57c24b6f27ba4e311aa999a2ca296d/ruptures-1.1.9-cp311-cp311-win_amd64.whl", hash = "sha256:4759f0b3decd8ee3c2bc5104247aedb9c06d51a2055e40961d5389dbeb7b9075", size = 473131 },
+    { url = "https://files.pythonhosted.org/packages/d0/96/986eca7c0520dfad3662443a88085b676044e5a5f7c2e1f3187ee5f9ce03/ruptures-1.1.9-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:28d242c961a2b486e36b25a4df3f26fabee0607ae8c80b2e65e73a9db491ce76", size = 491736 },
+    { url = "https://files.pythonhosted.org/packages/4a/70/3ee8cc4b8847b66d53f53a3fb330b98f3e0281fb0c4b86f8113c2ec18ea3/ruptures-1.1.9-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9df414e3952e1d6b26dc02515d28b9adfc821ef2c6459c196a3ae751dd7d1813", size = 1256852 },
+    { url = "https://files.pythonhosted.org/packages/d5/76/ee5c035213ecd622a7196e484fd1aab0c88706ace77c6b16942f90b056dc/ruptures-1.1.9-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8466857f4d5c957b050bead1bb0e7d5f2807c60c5bdc30fc533f36ae0234583f", size = 1271080 },
+    { url = "https://files.pythonhosted.org/packages/8d/23/a3effacebdd85732cb5c69679e11b544777cba6329ad70241a7f0512a1f5/ruptures-1.1.9-cp312-cp312-win_amd64.whl", hash = "sha256:92adde29b24b3ad94d8cd9421634a5f8dd729ae74d3b88bdca4bbc5cfd450c11", size = 474018 },
 ]
 
 [[package]]
