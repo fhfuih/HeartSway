@@ -139,7 +139,7 @@ class SensorDataController:
                 this_ibi = []
             else:
                 this_ibi = np.array(this_bpm)
-                this_ibi = 60_000 / this_ibi
+                this_ibi = 60_000 / this_ibi * 1.5
                 this_ibi = this_ibi.astype(int).tolist()
 
             if len(this_ibi) == 0:
