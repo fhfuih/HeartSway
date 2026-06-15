@@ -1,34 +1,30 @@
-Communication protocol
-======
+![ACM DL](https://img.shields.io/badge/ACM%20DL-10.1145%2F3800645.3813022-blue?logo=acm) ![arXiv](https://img.shields.io/badge/arXiv-2604.11701-red?logo=arxiv)
 
-All int in little endian
+# HeartSway: Exploring Biodata as Poetic Traces in Public Space
 
-Raspi to Ardunio:
-* 1B: type
-* type 0: control (e.g., from distance sensor)
-    * 1B: on (1) or off (0)
-* type 1: log
-    * all the rest in UTF-8 string
-* type 2: IBI
-    * 2B*5 unsigned int: ibi (normally 500~1100) in ms
-    * typically 10 numbers/20B in total, but expect exceptions
-* type 3: inhale-exhale cycle
-    * 2B*5: the next 5 inhale-exhale cycle
-    * in the order of in, out, in, out... normally 3000~6000 ms
-    * typically 10 numbers/20B in total, but expect exceptions
+This is the source code for our publication at DIS ’26. Please also see our publication at [ACM DL](https://dl.acm.org/doi/10.1145/3800645.3813022) and [arXiv](https://arxiv.org/abs/2604.11701).
 
-Ardunio to Raspi:
-* 1B: type
-* type 0: control (e.g., from capacitive sensor)
-    * 1B: on (1) or off (0)
-* type 1: log
-    * all the rest in UTF-8 string
-* type 2: time
-    * 4B unsigned int: the result of a millis() near Arduino's start.
-* type 3: pulse sensor data
-    * 4B unsigned long: millis()
-    * 2B unsigned int: bpm (normally 60~100)
-    * 2B unsigned int: ibi (normally 500~1100) in ms
-* type 4: stretch sensor data
-    * 4B unsigned long: millis()
-    * 4B float: stretchable cord resistence
+The `raspi-control` subfolder is to be executed on a Raspberry Pi (tested on Raspberry Pi 4), and `arduino-object` is to be uploaded to an Arduino (tested on Arduino Uno).
+
+## Citation
+
+```bibtex
+@inproceedings{10.1145/3800645.3813022,
+author = {Huang, Zeyu and Guo, Zhifan and Li, Xingyu and Ma, Xiaojuan and Howell, Noura},
+title = {HeartSway: Exploring Biodata as Poetic Traces in Public Space},
+year = {2026},
+isbn = {9798400725630},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3800645.3813022},
+doi = {10.1145/3800645.3813022},
+abstract = {Human traces scattered across urban landscapes can signify our everyday lives and societal vibrancy in subtle and poetic forms. In this paper, we explore how designed technology can engage biodata as evocative traces. To this end, we present the design, implementation, and evaluation of HeartSway , an interactive hammock that captures a user’s heart rate and micro-movements as traces and replays them as an embodied experience for the next visitor. Through a qualitative field study (N=10), we find that HeartSway evokes feelings of connection, curiosity about prior users, and appreciation for shared human vitality. Our work contributes to understanding anonymous archival biodata as a design material for experiential urban traces. We offer design considerations for intimate asynchronous encounters between strangers in public spaces and for reimagining public amenities.},
+booktitle = {Proceedings of the 2026 Designing Interactive Systems Conference},
+pages = {1479–1493},
+numpages = {15},
+keywords = {biodata, urban traces, public amenity, heart rate, embodied interactions},
+location = {
+},
+series = {DIS '26}
+}
+```
